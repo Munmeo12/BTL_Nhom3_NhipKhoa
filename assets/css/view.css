@@ -1,0 +1,216 @@
+.view-post-container {
+    max-width: 900px;
+    margin: auto;
+    padding: 28px 20px 45px;
+}
+
+.view-post-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #813027;
+    font-size: 14px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.view-post-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-post-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 15px;
+    border-radius: 7px;
+    background: #813027;
+    color: white;
+    font-size: 13px;
+}
+
+.edit-post-button:hover {
+    background: #6d271f;
+}
+
+/* BÀI VIẾT */
+.view-post-card {
+    background: white;
+    border: 1px solid #eee4dc;
+    border-radius: 13px;
+    overflow: hidden;
+}
+
+.view-post-header {
+    padding: 28px 30px 22px;
+    border-bottom: 1px solid #eee;
+}
+
+.post-meta-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.post-view-code {
+    color: #813027;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.view-post-header h1 {
+    font-size: 28px;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+
+.post-information {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    color: #777;
+    font-size: 13px;
+}
+
+.post-information span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ẢNH */
+.view-thumbnail {
+    padding: 25px 30px 0;
+}
+
+.view-thumbnail img {
+    width: 100%;
+    max-height: 450px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* TÓM TẮT */
+.view-summary {
+    margin: 25px 30px 0;
+    padding: 18px 20px;
+    border-left: 4px solid #813027;
+    background: #fff8ed;
+    border-radius: 6px;
+}
+
+.view-summary h3 {
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.view-summary p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #5f5652;
+}
+
+/* NỘI DUNG */
+.view-content {
+    padding: 28px 30px;
+}
+
+.view-content h3 {
+    font-size: 17px;
+    margin-bottom: 18px;
+}
+
+.article-content {
+    font-size: 15px;
+    line-height: 1.9;
+    color: #403a37;
+}
+
+/* LÝ DO TỪ CHỐI */
+.editor-note-box {
+    margin: 0 30px 25px;
+    padding: 17px 20px;
+    background: #fbe2e2;
+    border: 1px solid #f2bcbc;
+    border-radius: 8px;
+    color: #a52b2b;
+}
+
+.editor-note-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.editor-note-title i {
+    margin-right: 5px;
+}
+
+.editor-note-box p {
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* FOOTER BÀI */
+.view-post-footer {
+    border-top: 1px solid #eee;
+    padding: 18px 30px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    color: #777;
+    font-size: 12px;
+}
+
+@media (max-width: 650px) {
+    .view-post-header,
+    .view-content {
+        padding: 20px;
+    }
+
+    .view-thumbnail {
+        padding: 20px 20px 0;
+    }
+
+    .view-summary {
+        margin: 20px 20px 0;
+    }
+
+    .editor-note-box {
+        margin: 0 20px 20px;
+    }
+
+    .view-post-header h1 {
+        font-size: 22px;
+    }
+
+    .view-post-footer {
+        padding: 18px 20px;
+        flex-direction: column;
+        gap: 7px;
+    }
+}
+.success-message {
+    margin-bottom: 18px;
+    padding: 13px 16px;
+    border: 1px solid #b9dfc5;
+    border-radius: 8px;
+    background: #eef9f1;
+    color: #28743d;
+    font-size: 14px;
+}
+
+.success-message i {
+    margin-right: 6px;
+}

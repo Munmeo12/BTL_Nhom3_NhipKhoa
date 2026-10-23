@@ -1,0 +1,5 @@
+USE nhip_khoa;
+
+ALTER TABLE categories
+    ADD COLUMN description TEXT NULL AFTER name,
+    ADD COLUMN created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER status;

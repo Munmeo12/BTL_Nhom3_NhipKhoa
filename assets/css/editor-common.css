@@ -1,0 +1,90 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: #2d2927;
+    background: #fff8ed;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.editor-header {
+    width: 100%;
+    height: 82px;
+    background: #813027;
+    color: #fff;
+}
+
+.editor-header-container {
+    max-width: 1180px;
+    height: 100%;
+    margin: auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+}
+
+.editor-logo {
+    width: 190px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.editor-logo img {
+    width: 175px;
+    height: auto;
+    display: block;
+}
+
+.editor-menu {
+    height: 100%;
+    margin-left: 35px;
+    display: flex;
+    align-items: center;
+    gap: 45px;
+    flex: 1;
+}
+
+.editor-menu a {
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+}
+
+.editor-menu a.active::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 14px;
+    left: 0;
+    height: 2px;
+    background: #d9a236;
+}
+
+.editor-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.editor-user .fa-chevron-down {
+    margin-left: 3px;
+    font-size: 10px;
+}
+
+.editor-main {
+    min-height: 550px;
+    background: #fff8ed;
+}
+

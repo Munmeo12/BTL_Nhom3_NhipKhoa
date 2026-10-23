@@ -1,0 +1,220 @@
+.editor-dashboard-container {
+    max-width: 1040px;
+    margin: auto;
+    padding: 25px 20px 35px;
+}
+
+.editor-welcome {
+    margin-bottom: 22px;
+}
+
+.editor-welcome h1 {
+    margin-bottom: 6px;
+    color: #49312b;
+    font-size: 22px;
+}
+
+.editor-welcome p {
+    color: #87937b;
+    font-size: 14px;
+}
+
+/* THỐNG KÊ - ĐỒNG BỘ GIAO DIỆN ADMIN */
+.editor-statistics {
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+}
+
+.editor-stat-card {
+    min-height: 100px;
+    padding: 20px;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+
+    background: #fff;
+    border: 1px solid #eadfd9;
+    border-radius: 12px;
+    box-shadow: 0 7px 22px rgba(74, 48, 40, .04);
+}
+
+.editor-stat-icon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 9px;
+    font-size: 18px;
+}
+
+.editor-stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-stat-info strong {
+    margin: 3px 0;
+    color: #2f2724;
+    font-family: Lora, serif;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.editor-stat-info span {
+    margin-top: 0;
+    color: #786d68;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.editor-stat-icon.stat-blue {
+    color: #8c3026;
+    background: #fae9e6;
+}
+
+.editor-stat-icon.stat-purple {
+    color: #9c6b16;
+    background: #fff4d9;
+}
+
+.editor-stat-icon.stat-green {
+    color: #37765a;
+    background: #e8f4ed;
+}
+
+.editor-stat-icon.stat-red {
+    color: #6d6764;
+    background: #efedec;
+}
+
+.editor-recent-posts {
+    padding: 17px 14px 22px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.editor-recent-header {
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.editor-recent-header h2 {
+    font-size: 16px;
+}
+
+.editor-view-all {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #813027;
+    font-size: 13px;
+}
+
+.editor-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.editor-posts-table {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 7px;
+    overflow: hidden;
+}
+
+.editor-posts-table th,
+.editor-posts-table td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #e2e2e2;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 12px;
+}
+
+.editor-posts-table th {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.editor-posts-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.editor-title-cell {
+    min-width: 230px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.editor-title-cell img,
+.no-thumbnail {
+    width: 52px;
+    height: 45px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.editor-title-cell img {
+    object-fit: cover;
+}
+
+.no-thumbnail {
+    background: #f0eeee;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.editor-title-cell span {
+    max-width: 190px;
+    line-height: 17px;
+}
+
+.editor-view-button {
+    padding: 6px 11px;
+    border: 1px solid #ff6969;
+    border-radius: 6px;
+    background: #fff;
+    color: #f04c4c;
+    font-size: 11px;
+}
+
+.editor-view-button:hover {
+    background: #fff2f2;
+}
+
+.editor-empty {
+    height: 100px;
+    color: #888;
+    text-align: center !important;
+}
+
+@media (max-width: 800px) {
+    .editor-statistics {
+        grid-template-columns: repeat(2,1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .editor-statistics {
+        grid-template-columns: 1fr;
+    }
+
+    .editor-dashboard-container {
+        padding: 20px 15px 30px;
+    }
+}
