@@ -17,7 +17,7 @@ $adminUser = currentUser();
 <a class="<?= $adminPage === 'dashboard' ? 'active' : '' ?>" href="<?= e(BASE_URL) ?>admin/dashboard.php"><span class="admin-nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span>Tổng quan</a>
 <a class="<?= $adminPage === 'users' ? 'active' : '' ?>" href="<?= e(BASE_URL) ?>admin/users.php"><span class="admin-nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19v-1.5A4.5 4.5 0 0 1 8 13h2a4.5 4.5 0 0 1 4.5 4.5V19"/><path d="M16 5.5a3 3 0 0 1 0 5.5M17 14a4 4 0 0 1 3.5 4v1"/></svg></span>Tài khoản</a>
 <a class="<?= $adminPage === 'author-requests' ? 'active' : '' ?>" href="<?= e(BASE_URL) ?>admin/yeu-cau-tac-gia.php"><span class="admin-nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span>Yêu cầu tác giả</a>
-<a href="<?= e(BASE_URL) ?>editor/posts.php"><span class="admin-nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg></span>Bài viết</a>
+<a class="<?= $adminPage === 'posts' ? 'active' : '' ?>" href="<?= e(BASE_URL) ?>editor/posts.php"><span class="admin-nav-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg></span>Bài viết</a>
 <a class="<?= $adminPage === 'categories' ? 'active' : '' ?>" href="<?= e(BASE_URL) ?>views/categories.php">
     <span class="admin-nav-icon">
         <svg aria-hidden="true" viewBox="0 0 24 24">
