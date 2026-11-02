@@ -62,3 +62,50 @@
     .admin-nav-icon { flex-basis:26px; width:26px!important; height:26px; }
     .admin-nav-icon svg { width:15px; height:15px; }
 }
+
+/* ===== Trang Bài viết (admin) ===== */
+.post-review-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start}
+.post-review-grid.has-detail{grid-template-columns:minmax(0,1fr) 380px}
+.post-tabs{gap:8px;flex-wrap:wrap}
+.post-tab{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 14px;color:#49576e;background:#fff;border:1px solid #ccd1db;border-radius:999px;text-decoration:none;font:600 12px Inter,sans-serif}
+.post-tab b{padding:2px 7px;color:var(--wine);background:#eef2f9;border-radius:999px;font-size:10px}
+.post-tab:hover{border-color:var(--wine)}
+.post-tab.active{color:#fff;background:var(--wine);border-color:var(--wine)}
+.post-tab.active b{color:#fff;background:rgba(255,255,255,.2)}
+.post-cell{display:flex;align-items:center;gap:12px;max-width:340px}
+.post-cell b{overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.35}
+.post-cell img,.post-thumb-empty{flex:0 0 40px;width:40px;height:40px;object-fit:cover;border-radius:8px}
+.post-thumb-empty{display:grid;place-items:center;color:#9aa4b5;background:#eef1f6}
+.status-chip.post-pending{color:#8a5a12;background:#fdf1dc}
+.status-chip.post-published{color:#286448;background:#e8f5ee}
+.status-chip.post-rejected{color:#8b3330;background:#fae7e6}
+.status-action.view{display:inline-flex;align-items:center;justify-content:center;color:var(--wine);background:#eef2f9;text-decoration:none}
+.admin-table tr.row-selected{background:#f1f5fb}
+.admin-pagination{display:flex;gap:6px;padding:16px 20px;border-top:1px solid var(--line)}
+.admin-pagination a{display:grid;place-items:center;min-width:34px;height:34px;color:var(--wine);background:#fff;border:1px solid #ccd1db;border-radius:7px;text-decoration:none;font-size:12px;font-weight:600}
+.admin-pagination a.active,.admin-pagination a:hover{color:#fff;background:var(--wine);border-color:var(--wine)}
+.post-detail-panel{position:sticky;top:20px}
+.post-detail-body{padding:20px 22px;max-height:60vh;overflow:auto}
+.post-detail-body h3{margin:0 0 14px;font:600 18px/1.35 Lora,serif;color:var(--brown)}
+.post-meta{display:grid;gap:8px;margin:0 0 16px}
+.post-meta div{display:flex;justify-content:space-between;gap:12px;font-size:12px}
+.post-meta dt{color:var(--muted)}.post-meta dd{margin:0;font-weight:600}
+.post-detail-image{width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-bottom:14px}
+.post-detail-summary{padding:12px 14px;margin:0 0 14px;color:#2b3648;background:#f5f7fb;border-radius:8px;font-size:12px;line-height:1.6}
+.post-detail-content{font-size:12px;line-height:1.75;color:#2b3648}
+.post-detail-actions{display:flex;justify-content:flex-end;gap:10px;padding:16px 22px;border-top:1px solid var(--line)}
+.post-detail-actions form{margin:0}
+.post-detail-actions .status-action{height:36px;padding:0 16px}
+.admin-modal{display:none;position:fixed;inset:0;z-index:50;place-items:center;background:rgba(14,22,37,.55)}
+.admin-modal.show{display:grid}
+.admin-modal-box{width:min(480px,92vw);padding:22px;background:#fff;border-radius:12px}
+.admin-modal-box header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.admin-modal-box h2{margin:0;font:600 18px Lora,serif}
+.admin-modal-box header button{border:0;background:none;cursor:pointer;font-size:16px}
+.admin-modal-box label{display:block;margin-bottom:8px;font-size:12px;font-weight:600}
+.admin-modal-box label span{color:#b3342f}
+.admin-modal-box textarea{width:100%;padding:10px;border:1px solid #ccd1db;border-radius:8px;font:12px Inter,sans-serif;resize:vertical}
+.admin-modal-box textarea:focus{outline:0;border-color:var(--wine);box-shadow:0 0 0 3px rgba(27,58,110,.08)}
+.admin-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+.admin-modal-actions .status-action{height:36px;padding:0 16px}
+@media(max-width:1100px){.post-review-grid.has-detail{grid-template-columns:1fr}.post-detail-panel{position:static}}

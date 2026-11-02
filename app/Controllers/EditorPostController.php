@@ -65,9 +65,15 @@ final class EditorPostController extends Controller
         $page = $data['page'];
         $totalPages = $data['pages'];
         $selectedPost = $viewId > 0 ? $model->findForReview($viewId) : null;
-        $this->render('editor.posts', compact(
+        $viewData = compact(
             'filter', 'viewId', 'success', 'error', 'counts', 'posts', 'page', 'totalPages', 'selectedPost'
-        ) + ['pageTitle' => 'Duyệt bài - Biên tập viên', 'pageCss' => 'editor-posts.css'], 'layouts.editor');
+        );
+        // Admin vào từ sidebar quản trị thì dùng layout admin cho đồng nhất với các mục khác.
+        if (($user['role'] ?? '') === 'admin') {
+            $this->render('admin.posts', $viewData + ['pageTitle' => 'Quản lý bài viết', 'adminPage' => 'posts'], 'layouts.admin');
+            return;
+        }
+        $this->render('editor.posts', $viewData + ['pageTitle' => 'Duyệt bài - Biên tập viên', 'pageCss' => 'editor-posts.css'], 'layouts.editor');
     }
 
     private function pdo(): PDO
