@@ -21,7 +21,7 @@ function db(): PDO
     };
 
     $host = $value('DB_HOST', 'host', '127.0.0.1');
-    $port = $value('DB_PORT', 'port', '3306');
+    $port = $value('DB_PORT', 'port', '3307');
     $name = $value('DB_NAME', 'name', 'nhip_khoa');
     $user = $value('DB_USER', 'user', 'root');
     $password = $value('DB_PASSWORD', 'password', '');
