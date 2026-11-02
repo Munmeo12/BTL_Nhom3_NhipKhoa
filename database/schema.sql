@@ -32,6 +32,7 @@ CREATE TABLE categories (
     status ENUM('active', 'hidden') NOT NULL DEFAULT 'active',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
+
 CREATE TABLE posts (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     category_id INT UNSIGNED NOT NULL,
@@ -99,8 +100,6 @@ CREATE INDEX idx_posts_status_published ON posts(status, published_at);
 CREATE INDEX idx_posts_category ON posts(category_id);
 CREATE INDEX idx_comments_post_status ON comments(post_id, status);
 
--- Đề 2.3 yêu cầu CRUD "chuyên mục, bài viết và thẻ" nhưng CSDL cũ chưa có thẻ.
--- Quan hệ nhiều-nhiều: một bài có nhiều thẻ, một thẻ gắn cho nhiều bài.
 CREATE TABLE IF NOT EXISTS tags (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     slug VARCHAR(100) NOT NULL UNIQUE,
@@ -124,10 +123,6 @@ CREATE TABLE IF NOT EXISTS post_tags (
 
 CREATE INDEX idx_post_tags_tag ON post_tags(tag_id);
 
--- Độc giả gửi yêu cầu làm Tác giả, Admin duyệt hoặc từ chối.
--- pending_flag: cột sinh tự động = 1 khi yêu cầu đang chờ, NULL khi đã xử lý.
--- UNIQUE(user_id, pending_flag) bảo đảm mỗi người chỉ có TỐI ĐA MỘT yêu cầu đang chờ
--- (NULL không bị tính trùng nên lịch sử đã duyệt/từ chối được lưu thoải mái).
 CREATE TABLE IF NOT EXISTS author_requests (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id INT UNSIGNED NOT NULL,
