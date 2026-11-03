@@ -1,158 +1,125 @@
-# Bài tập lớn Lập trình web
+# Nhịp Khoa - Website tin tức/blog có trang quản trị
 
-## Đề tài
+Bài tập lớn môn Lập trình web, **Chủ đề 3**: cổng tin tức nhỏ cho khoa, nơi tác giả viết bài,
+biên tập viên duyệt bài, khách đọc và bình luận, quản trị viên quản lý toàn bộ nội dung.
 
-Nhóm chọn đề tài **Website tin tức/blog có trang quản trị**.
+## Nhóm thực hiện
 
-Website dự kiến có phần xem bài viết cho người dùng và phần quản trị để nhóm
-có thể thêm, sửa, xóa bài viết.
+| Họ và tên | Vai trò trong nhóm | Vai trò hệ thống phụ trách |
+|---|---|---|
+| Trần Thị Hà Anh | Nhóm trưởng | **Admin** + nền tảng (đăng nhập, phân quyền, tài khoản, chuyên mục, thẻ) |
+| Nguyễn Hải Vân | Thành viên | **Biên tập viên** (duyệt bài, kiểm duyệt bình luận) |
+| Đào Khánh Trung | Thành viên | **Tác giả** (viết bài, upload ảnh, slug, yêu cầu làm tác giả) |
+| Nguyễn Trung Vũ Học | Thành viên | **Độc giả/Khách** (trang công khai, tìm kiếm, bình luận, Impact Box) |
 
-## Thành viên
+Phạm vi file của từng người: [`docs/PHAN-CONG.md`](docs/PHAN-CONG.md).
 
-| MSSV | Họ và tên |
+## Chức năng đã hoàn thành
 
+- **Khách:** xem trang chủ, danh mục, chi tiết bài, tìm kiếm (theo nội dung, tác giả, chuyên mục, thẻ), lọc theo thẻ, RSS.
+- **Độc giả:** đăng ký (mật khẩu có chữ hoa, chữ thường, số, ký tự đặc biệt), đăng nhập, bình luận (chờ duyệt),
+  lưu bài vào Impact Box kèm ghi chú, gửi yêu cầu làm tác giả.
+- **Tác giả:** tạo, sửa, xóa bài của mình, lưu nháp hoặc gửi duyệt, chọn thẻ, upload ảnh đại diện
+  (JPG/PNG/WEBP, tối đa 5MB, kiểm tra MIME thật), xem lý do khi bị từ chối hoặc bị gỡ.
+- **Biên tập viên:** duyệt, từ chối (bắt buộc ghi lý do), hẹn giờ xuất bản, đánh dấu bài nổi bật.
+- **Admin:** quản lý tài khoản (đổi vai trò, khóa/mở khóa), chuyên mục, thẻ, yêu cầu làm tác giả; gỡ hoặc xóa bài;
+  kiểm duyệt bình luận (duyệt/ẩn/hiện/xóa) bằng endpoint JSON gọi qua `fetch()`.
+- **Nâng cao:** RSS, lượt xem, bài nổi bật, lịch xuất bản. Chưa làm: trình soạn thảo rich text.
 
-## Chức năng dự kiến
+Luồng bài viết: `nháp → chờ duyệt → đã đăng` hoặc `từ chối` (kèm lý do). Chỉ bài đã đăng và đã tới giờ xuất bản mới hiện với khách.
 
-- Xem danh sách và chi tiết bài viết.
-- Xem bài viết theo danh mục.
-- Tìm kiếm bài viết.
-- Đăng nhập trang quản trị.
-- Thêm, sửa, xóa bài viết và danh mục.
-- Bình luận và quản lý bình luận.
-- Lưu bài viết vào Impact Box và thêm ghi chú.
+## Công nghệ
 
-## Công nghệ sử dụng
+HTML, CSS, JavaScript (Fetch API), PHP 8 thuần theo mô hình MVC, MySQL (PDO prepared statement), chạy trên XAMPP.
 
-- HTML, CSS, JavaScript.
-- PHP và MySQL.
-- XAMPP.
+## Cách chạy trên máy
 
-## Phát triển form đăng nhập - Buổi 3
+1. Cài XAMPP, đặt thư mục project vào `C:\xampp\htdocs\` (ví dụ `btl_laptrinhweb`), bật **Apache** và **MySQL**.
+2. Tạo cấu hình kết nối: sao chép `config/config.local.example.php` thành `config/config.local.php`,
+   rồi sửa `name`, `user`, `password`, `host`, `port`.
+   Lưu ý cổng mặc định trong file mẫu là **3307**; XAMPP thường dùng **3306**, hãy đổi nếu kết nối lỗi.
+3. Tạo CSDL (mở MySQL Command Line tại thư mục project):
 
-Phần đăng nhập do Trần Nguyễn Bình Nguyên thực hiện trên branch
-`binhnguyen-dangnhap`, phát triển trực tiếp từ cấu trúc ban đầu của `main`.
+   ```sql
+   SOURCE database/schema.sql;
+   SOURCE database/seed.sql;
+   SOURCE database/seed_demo.sql;   -- tùy chọn: thêm tác giả B và độc giả mẫu để thử kiểm thử
+   ```
 
-- Route: `GET|POST /dang-nhap.php`.
-- Email bắt buộc, đúng định dạng và không quá 254 ký tự.
-- Mật khẩu bắt buộc, từ 8 đến 72 ký tự.
-- Hiển thị lỗi tại trường tương ứng và giữ lại email khi form có lỗi.
-- Không giữ lại mật khẩu sau khi gửi form.
-- Dùng `htmlspecialchars()` để mã hóa dữ liệu khi hiển thị.
-- Dùng `password_verify()` để kiểm tra mật khẩu đã hash.
-- Dùng session để giữ trạng thái đăng nhập và hỗ trợ đăng xuất.
-- Đăng nhập hiện đã kiểm tra tài khoản thật trong MySQL (bảng `users`, `roles`).
+   `schema.sql` chạy trước, `seed.sql` chạy sau. Cả hai dùng `utf8mb4` nên lưu được tiếng Việt.
+4. Mở `http://localhost/btl_laptrinhweb/`.
 
-Tài khoản thử nghiệm:
+### Nâng cấp database đã có (không chạy lại schema/seed)
 
-```text
-Email: admin@nhipkhoa.vn
-Mật khẩu: Admin@123
-```
+Chạy theo thứ tự, chỉ chạy file nào database của bạn chưa có:
 
-Tài khoản bị khóa để kiểm thử cảnh báo đăng nhập:
+| File trong `database/migrations/` | Nội dung |
+|---|---|
+| `2026_09_06_public_categories.sql` | Thêm 4 chuyên mục công khai (Tin khoa, Học tập, Cơ hội, Sự kiện) |
+| `2026_09_06_role_content.sql` | Dữ liệu cho khu vực Tác giả và Biên tập viên |
+| `2026_09_08_add_category_description_created_at.sql` | Thêm cột mô tả, ngày tạo cho chuyên mục |
+| `2026_09_08_move_legacy_categories.sql` | Chuyển bài từ chuyên mục cũ sang chuyên mục mới |
+| `2026_10_23_add_author_requests.sql` | Bảng yêu cầu làm tác giả |
+| `2026_10_23_add_tags.sql` | Bảng thẻ (`tags`, `post_tags`) |
+| `2026_11_03_advanced_features.sql` | Cột `view_count`, `is_featured` (lượt xem, bài nổi bật) |
+| `2026_11_03_tags_demo.sql` | Thẻ mẫu (tùy chọn) |
 
-```text
-Email: khoa.locked@nhipkhoa.vn hoặc lan.locked@nhipkhoa.vn
-Mật khẩu: Admin@123
-```
+Biến môi trường `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_SSL_CA`, `DB_SSL_VERIFY`
+(nếu có) được ưu tiên hơn `config.local.php`.
 
-## Thiết kế CSDL - Buổi 4
+### Dùng chung MySQL trên VPS (không bắt buộc)
 
-### Cấu hình trên từng máy
+Tạo `config/config.local.php` với địa chỉ, tài khoản và mật khẩu do nhóm trưởng chia sẻ riêng, thêm
+`'ssl_ca' => __DIR__ . '/certs/mysql-ca.pem'`. Không ghi địa chỉ hay mật khẩu thật vào README hoặc commit lên Git.
+Ảnh upload nằm trên máy chạy PHP nên không tự đồng bộ giữa các máy dù dùng chung MySQL.
 
-Mọi thành viên dùng chung cấu trúc trong `database/schema.sql` và dữ liệu mẫu trong
-`database/seed.sql`. Riêng thông tin kết nối có thể khác nhau trên từng máy:
+## Tài khoản mẫu
 
-1. Sao chép `config/config.local.example.php` thành `config/config.local.php`.
-2. Sửa `name`, `user`, `password`, `host` hoặc `port` theo MySQL trên máy đó.
-3. Không commit `config.local.php`; file này đã có trong `.gitignore`.
+Mật khẩu chung cho mọi tài khoản mẫu: `Admin@123`.
 
-Nếu database đã được tạo từ trước, chạy thêm
-`database/migrations/2026_09_06_role_content.sql` để bổ sung dữ liệu cần cho khu vực
-Tác giả và Biên tập viên.
-
-Biến môi trường `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` vẫn được
-ưu tiên nếu máy hoặc server đã cấu hình sẵn.
-
-### Dùng chung MySQL trên VPS
-
-Mỗi thành viên tạo `config/config.local.php` với cấu hình sau và điền mật khẩu
-được quản trị viên chia sẻ riêng:
-
-```php
-<?php
-declare(strict_types=1);
-
-return [
-    'host' => '207.148.64.140',
-    'port' => '3306',
-    'name' => 'nhip_khoa',
-    'user' => 'nhip_khoa_app',
-    'password' => 'MAT_KHAU_DUOC_CHIA_SE_RIENG',
-    'ssl_ca' => __DIR__ . '/certs/mysql-ca.pem',
-];
-```
-
-`config.local.php` đã được Git bỏ qua. Không commit hoặc gửi mật khẩu lên kho mã
-nguồn. Chứng chỉ CA trong `config/certs/mysql-ca.pem` là chứng chỉ công khai và
-được dùng để mã hóa kết nối tới MySQL trên VPS.
-
-CSDL `nhip_khoa` gồm 6 bảng chính (ngoài ra còn `author_requests` cho yêu cầu làm tác giả và `tags`, `post_tags` chưa dùng trong giao diện):
-
-- `roles`, `users`: tài khoản và phân quyền.
-- `categories`, `posts`: danh mục, nội dung và quy trình duyệt bài.
-- `comments`: bình luận và trạng thái kiểm duyệt.
-- `impact_box_items`: bài viết người dùng đã lưu kèm ghi chú.
-
-ERD và mô tả quan hệ: [`database/erd.md`](database/erd.md).
-
-Các file chạy CSDL:
-
-- [`database/schema.sql`](database/schema.sql): tạo database, bảng và ràng buộc.
-- [`database/seed.sql`](database/seed.sql): dữ liệu thử bằng tiếng Việt.
-
-Phần thiết kế bảng `roles`, `users` và dữ liệu tài khoản do Trần Nguyễn Bình
-Nguyên thực hiện. Các thành viên tiếp tục rà soát bảng thuộc chức năng của mình
-trước khi tích hợp vào `main`.
+| Email | Vai trò | Thành viên |
+|---|---|---|
+| `admin@nhipkhoa.vn` | Admin | Trần Thị Hà Anh |
+| `van@nhipkhoa.vn` | Biên tập viên | Nguyễn Hải Vân |
+| `trung@nhipkhoa.vn` | Tác giả | Đào Khánh Trung |
+| `hoc@nhipkhoa.vn` | Độc giả | Nguyễn Trung Vũ Học |
+| `tacgia.b@nhipkhoa.vn`, `docgia.demo@nhipkhoa.vn` | Tác giả B, độc giả (trong `seed_demo.sql`) | dùng cho tình huống kiểm thử |
+| `khoa.locked@nhipkhoa.vn`, `lan.locked@nhipkhoa.vn` | Tài khoản bị khóa | thử cảnh báo đăng nhập |
 
 ## Cấu trúc thư mục
 
-Dự án đã được chuyển sang mô hình MVC. Toàn bộ logic nằm trong `app/`, còn các
-file `.php` ở ngoài chỉ là **điểm vào mỏng** giữ nguyên đường dẫn URL cũ.
+Toàn bộ logic nằm trong `app/` (MVC). Các file `.php` ở ngoài chỉ là **điểm vào mỏng**, giữ nguyên URL.
 
 ```text
 btl_laptrinhweb/
-├── index.php, about.php, bai-viet.php, dang-nhap.php, ...   ← điểm vào
-├── bootstrap/
-│   └── app.php          session, BASE_URL, autoload, e()/csrfToken()/redirect()
+├── index.php, bai-viet.php, dang-nhap.php, dang-ky.php, rss.php, ...   ← điểm vào công khai
+├── admin/ author/ editor/ pages/ views/                                ← điểm vào theo khu vực
+├── bootstrap/app.php     session, BASE_URL, autoload, e()/csrfToken()/verifyCsrf()
 ├── app/
-│   ├── Core/            Controller, Request, Response, View
-│   ├── Controllers/     một class cho mỗi nhóm chức năng
-│   ├── Models/          truy vấn CSDL, nhận PDO qua constructor
-│   ├── Services/        AuthService, ImageUploadService, CategoryValidator
-│   └── Views/
-│       ├── layouts/     admin, auth, author, editor, public
-│       ├── admin/       dashboard, users, categories/, comments/
-│       ├── auth/  author/  editor/  impact/  public/
-├── admin/, author/, editor/, pages/, views/                 ← điểm vào theo khu vực
-├── assets/              css/  js/  images/  uploads/
-├── config/              database.php, config.local.example.php
-├── database/            erd.md, schema.sql, seed.sql, migrations/
-├── includes/            header/footer dùng chung cho layout
-├── docs/
-└── tests/
+│   ├── Core/             Controller, Request, Response, View
+│   ├── Controllers/      Auth, AdminUser, Category, AdminTag, AuthorPost, EditorPost,
+│   │                     Comment, AuthorRequest, Home, PublicPost, PublicArticle, PublicPage, ImpactBox
+│   ├── Models/           User, Post, Category, Tag, Comment, ImpactBox, AuthorRequest
+│   ├── Services/         AuthService, ImageUploadService, Slugger, CategoryValidator
+│   └── Views/            layouts/ (admin, auth, author, editor, public) và giao diện từng khu vực
+├── includes/             khung dùng chung (xem includes/README.md)
+├── assets/               css/ js/ images/ uploads/
+├── config/               database.php, config.local.example.php, certs/
+├── database/             schema.sql, seed.sql, seed_demo.sql, migrations/, erd.md
+├── docs/  tests/
 ```
+
+Hai thư mục dễ nhầm:
+
+- **`views/`** (chữ thường, ở gốc) chỉ chứa file điểm vào cho chuyên mục và Impact Box. Giao diện thật nằm ở **`app/Views/`**.
+  Xem [`views/README.md`](views/README.md).
+- **`pages/chi-tiet-bai-viet.php`** và **`pages/chi-tiet-thay-doi.php`** chỉ chuyển hướng cho link cũ.
 
 ### Quy ước điểm vào
 
-Dự án chạy trên Apache/XAMPP nên không có router: mỗi URL là một file PHP thật.
-File đó chỉ nạp bootstrap rồi gọi đúng một action, ví dụ `admin/users.php`:
+Mỗi URL là một file PHP thật (Apache/XAMPP không có router). File chỉ nạp bootstrap và gọi một action:
 
 ```php
-<?php
-declare(strict_types=1);
-
 require_once __DIR__ . '/../bootstrap/app.php';
 
 (new App\Controllers\AdminUserController(
@@ -162,72 +129,38 @@ require_once __DIR__ . '/../bootstrap/app.php';
 ))->users(App\Core\Request::capture());
 ```
 
-Khi thêm chức năng mới: viết Model trong `app/Models`, Controller trong
-`app/Controllers`, view trong `app/Views`, rồi tạo file điểm vào như trên.
-Không đặt truy vấn hay xử lý form trực tiếp trong file điểm vào.
+Thêm chức năng mới: viết Model trong `app/Models`, Controller trong `app/Controllers`, View trong
+`app/Views`, rồi tạo file điểm vào. Không viết truy vấn hay xử lý form trực tiếp trong file điểm vào.
 
-## Cách chạy trên máy
+## Bảo mật
 
-1. Cài XAMPP.
-2. Tải project về và đặt thư mục vào `C:\xampp\htdocs`.
-3. Mở XAMPP rồi bật Apache. Khi có database thì bật thêm MySQL.
-4. Mở trình duyệt và truy cập:
+- Mật khẩu lưu bằng `password_hash`, kiểm tra bằng `password_verify`; session đổi id sau khi đăng nhập.
+- Mọi form POST kiểm tra CSRF (`verifyCsrf()`); dữ liệu in ra qua `e()` chống XSS (kể cả bình luận).
+- Mọi truy vấn dùng PDO prepared statement.
+- Phân quyền kiểm tra ở server bằng `requireRole([...])`. Khóa tài khoản hoặc đổi vai trò có hiệu lực ngay
+  (`AuthService::user()` đối chiếu lại CSDL ở mỗi request).
+- Upload ảnh kiểm tra MIME thật, giới hạn 5MB, đặt tên ngẫu nhiên.
+- Slug bài viết và thẻ sinh từ tiêu đề, trùng thì thêm hậu tố `-2`, `-3`.
+- Kết nối SSL tới MySQL VPS mặc định không xác minh chứng chỉ máy chủ; đặt `ssl_verify` = `'1'` nếu chứng chỉ khớp host.
 
-   ```text
-   http://localhost/btl_laptrinhweb/
-   ```
+## Kiểm thử
 
-5. Trang giới thiệu nhóm:
+Bộ 8 tình huống kiểm thử tối thiểu và đối chiếu với đề: [`docs/KIEM-THU.md`](docs/KIEM-THU.md).
+Script tự động và cách chạy: [`tests/README.md`](tests/README.md).
 
-   ```text
-   http://localhost/btl_laptrinhweb/about.php
-   ```
+## Giới hạn đã biết
 
-6. Trang đăng nhập:
+- Trang danh mục công khai chỉ có 4 chuyên mục cố định (`tin-khoa`, `hoc-tap`, `co-hoi`, `su-kien`).
+- **Gỡ bài** (Admin) đưa bài về trạng thái `rejected` và ghi `[Gỡ bài]` vào lý do, vì đề không yêu cầu thêm trạng thái mới.
+- Bài hẹn giờ chưa tới giờ hiển thị là "Hẹn đăng" với tác giả và biên tập viên, khách chưa thấy.
+- Chưa có trình soạn thảo rich text; chưa giới hạn số lần đăng nhập sai.
+- Một số trang phụ (Hướng dẫn, FAQ, Liên hệ, Góp ý) dẫn tới trang "Đang phát triển".
 
-   ```text
-   http://localhost/btl_laptrinhweb/dang-nhap.php
-   ```
+## Tài liệu
 
-## Cách chạy CSDL local
-
-Mở CMD tại thư mục project và vào MySQL Command Line:
-
-```bat
-C:\xampp\mysql\bin\mysql.exe -u root
-```
-
-Nếu tài khoản `root` có mật khẩu, dùng:
-
-```bat
-C:\xampp\mysql\bin\mysql.exe -u root -p
-```
-
-Trong màn hình MySQL, chạy đúng thứ tự:
-
-```sql
-SOURCE database/schema.sql;
-SOURCE database/seed.sql;
-USE nhip_khoa;
-SHOW TABLES;
-```
-
-`schema.sql` phải chạy trước để tạo bảng; `seed.sql` chạy sau để thêm dữ liệu
-thử. Cả hai file dùng `utf8mb4` nên lưu được tiếng Việt.
-
-Hiện tại project đã có cấu trúc ban đầu, trang giới thiệu, form đăng nhập và bộ
-script CSDL. Các thành viên sẽ tiếp tục tích hợp chức năng của mình vào schema
-chung.
-
-## Tài liệu phát triển hiện tại
-
-- [`docs/NGUOI-1-FLOW.md`](docs/NGUOI-1-FLOW.md): nhiệm vụ, cơ chế hoạt động,
-  điều kiện đăng ký/đăng nhập, phân quyền và cách demo phần Người 1.
-- [`docs/KIEM-THU.md`](docs/KIEM-THU.md): đối chiếu đề bài chủ đề 3 và 8 tình huống kiểm thử.
-- [`docs/GITHUB-FLOW.md`](docs/GITHUB-FLOW.md): cách tổ chức `main`, `develop`,
-  branch chức năng và Pull Request của cả nhóm.
-
-Branch `feature/person1-auth-home` thay tài khoản mẫu bằng đăng ký/đăng nhập thật
-qua PDO và MySQL, thêm session, CSRF, kiểm tra role, trang chủ chỉ đọc bài
-`published` và khung dashboard dành cho Admin.
-
+- [`docs/PHAN-CONG.md`](docs/PHAN-CONG.md): phân công và bản đồ code theo vai trò.
+- [`docs/KIEM-THU.md`](docs/KIEM-THU.md): đối chiếu đề bài và kiểm thử.
+- [`docs/NGUOI-1-FLOW.md`](docs/NGUOI-1-FLOW.md): luồng đăng ký, đăng nhập, phân quyền, quản lý tài khoản.
+- [`docs/SYSTEM-STATUS.md`](docs/SYSTEM-STATUS.md): trạng thái hệ thống và checklist trước khi nộp.
+- [`docs/GITHUB-FLOW.md`](docs/GITHUB-FLOW.md): quy trình Git của nhóm.
+- [`database/README.md`](database/README.md), [`database/erd.md`](database/erd.md): CSDL.

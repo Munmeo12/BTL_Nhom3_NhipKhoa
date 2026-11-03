@@ -46,3 +46,8 @@ INSERT INTO impact_box_items (user_id, post_id, note, created_at) VALUES
 INSERT INTO author_requests (user_id, contact, topics, reason, sample_link, status, admin_note, reviewed_by, reviewed_at, created_at) VALUES
     (4, NULL, 'Học tập', 'Em muốn chia sẻ kinh nghiệm học môn lập trình web cho các bạn khóa sau.', NULL, 'rejected', 'Hồ sơ còn sơ sài, hãy bổ sung bài viết mẫu rồi gửi lại.', 1, '2026-08-27 09:00:00', '2026-08-26 20:00:00'),
     (8, 'Zalo 0900000000', 'Học bổng, thực tập, workshop', 'Mình là sinh viên năm 3, thường xuyên tham gia workshop và muốn đăng bài tổng hợp học bổng, cơ hội thực tập cho các bạn trong khoa.', 'https://example.com/bai-mau', 'pending', NULL, NULL, NULL, '2026-08-28 08:30:00');
+-- Dữ liệu mẫu cho lượt xem và bài nổi bật (chức năng nâng cao).
+UPDATE posts SET view_count = 128, is_featured = 1 WHERE id = 1;
+UPDATE posts SET view_count = 86 WHERE id = 5;
+UPDATE posts SET view_count = 54 WHERE id = 7;
+UPDATE posts SET view_count = 31 WHERE id = 13;

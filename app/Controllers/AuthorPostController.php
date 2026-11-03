@@ -67,7 +67,7 @@ final class AuthorPostController extends Controller
         if ($post === null) {
             Response::abort(404, 'Không tìm thấy bài viết hoặc bạn không có quyền xem bài này.');
         }
-        [$statusClass, $statusText] = $this->statusLabel((string) $post['status']);
+        [$statusClass, $statusText] = $this->statusLabel((string) $post['status'], !empty($post['is_scheduled']));
         $postCode = 'BV' . str_pad((string) $post['id'], 3, '0', STR_PAD_LEFT);
         $success = (string) ($_SESSION['success'] ?? '');
         unset($_SESSION['success']);
@@ -242,8 +242,11 @@ final class AuthorPostController extends Controller
         return '';
     }
 
-    private function statusLabel(string $status): array
+    private function statusLabel(string $status, bool $scheduled = false): array
     {
+        if ($status === 'published' && $scheduled) {
+            return ['pending', 'Hẹn đăng'];
+        }
         return match ($status) {
             'draft' => ['draft', 'Nháp'], 'pending' => ['pending', 'Chờ duyệt'],
             'published' => ['published', 'Đã đăng'], 'rejected' => ['rejected', 'Từ chối'],

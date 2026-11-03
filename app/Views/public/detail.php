@@ -242,6 +242,8 @@ declare(strict_types=1);
                         <?= e(publicPostDate($post)) ?>
                         · Tác giả:
                         <?= e($post['author_name']) ?>
+                        · <?= (int) ($post['view_count'] ?? 0) ?> lượt xem
+                        <?php if (!empty($post['is_featured'])): ?><span class="comment-role">Nổi bật</span><?php endif; ?>
                     </p>
 
                     <?php if (!empty($tags)): ?>
@@ -327,7 +329,10 @@ declare(strict_types=1);
                                             <?= e(mb_substr((string) ($comment['full_name'] ?? 'N'), 0, 1)) ?>
                                         </div>
                                         <div class="comment-body">
-                                            <strong><?= e($comment['full_name'] ?? 'Người dùng') ?></strong>
+                                            <strong><?= e($comment['full_name'] ?? 'Người dùng') ?><?php
+                                                $roleLabel = ['admin' => 'Quản trị viên', 'editor' => 'Biên tập viên', 'author' => 'Tác giả'][$comment['role'] ?? ''] ?? '';
+                                                if ((int) ($comment['user_id'] ?? 0) === (int) ($post['author_id'] ?? -1)) { $roleLabel = 'Tác giả bài viết'; }
+                                            ?><?php if ($roleLabel !== ''): ?> <span class="comment-role"><?= e($roleLabel) ?></span><?php endif; ?></strong>
                                             <p><?= nl2br(e($comment['content'])) ?></p>
                                             <small><?= e(date('d/m/Y H:i', strtotime((string) $comment['created_at']))) ?></small>
                                         </div>

@@ -103,6 +103,10 @@ $rejectedPosts = $counts['rejected'];
                                 $statusClass = '';
                                 $statusText = 'Không xác định';
                         }
+                        if ($post['status'] === 'published' && !empty($post['is_scheduled'])) {
+                            $statusClass = 'pending';
+                            $statusText = 'Hẹn đăng';
+                        }
                         ?>
 
                         <tr>

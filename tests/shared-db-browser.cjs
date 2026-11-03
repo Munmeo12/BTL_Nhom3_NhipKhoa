@@ -7,11 +7,11 @@ if (!process.argv.includes('--allow-shared-vps')) throw Error('Explicit opt-in r
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = path.resolve(__dirname,'..');
 const php = process.env.PHP_BINARY || 'C:/xampp/php/php.exe';
-const run = 'qa-ly-'+crypto.randomBytes(8).toString('hex');
+const run = 'qa-shared-'+crypto.randomBytes(8).toString('hex');
 const artifacts = path.join(process.env.TEMP || root,run);
 fs.mkdirSync(artifacts,{recursive:true});
 function fixture(action) {
-  return JSON.parse(execFileSync(php,[path.join(__dirname,'ly-shared-fixture.php'),'--allow-shared-vps',action,run],{cwd:root,encoding:'utf8',windowsHide:true}));
+  return JSON.parse(execFileSync(php,[path.join(__dirname,'shared-db-fixture.php'),'--allow-shared-vps',action,run],{cwd:root,encoding:'utf8',windowsHide:true}));
 }
 const servers=[];let browser,data;
 let checks=0;

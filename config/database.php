@@ -41,7 +41,7 @@ function db(): PDO
             : PDO::MYSQL_ATTR_SSL_CA] = $sslCa;
         $options[defined('Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT')
             ? Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT
-            : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+            : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = $value('DB_SSL_VERIFY', 'ssl_verify', '0') === '1';
     }
 
     $pdo = new PDO("mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4", $user, $password, $options);

@@ -63,11 +63,34 @@ final class EditorPostController extends Controller
                 } else {
                     $_SESSION['editor_error'] = 'Không thể xóa bài viết.';
                 }
+            } elseif (in_array($action, ['feature', 'unfeature'], true)) {
+                if ($model->setFeatured($postId, $action === 'feature')) {
+                    $_SESSION['editor_success'] = $action === 'feature'
+                        ? 'Đã đặt bài viết là nổi bật.' : 'Đã bỏ nổi bật bài viết.';
+                } else {
+                    $_SESSION['editor_error'] = 'Chỉ bài đã được duyệt mới đặt được nổi bật.';
+                }
             } elseif (in_array($action, ['approve', 'reject'], true)) {
-                $changed = $model->review($postId, (int) $user['id'], $action, $note);
+                $publishAt = null;
+                $rawSchedule = trim((string) $request->input('publish_at', ''));
+                if ($action === 'approve' && $rawSchedule !== '') {
+                    $parsed = \DateTimeImmutable::createFromFormat('Y-m-d\TH:i', $rawSchedule);
+                    if ($parsed === false || $parsed->format('Y-m-d\TH:i') !== $rawSchedule) {
+                        $_SESSION['editor_error'] = 'Thời gian hẹn đăng không hợp lệ.';
+                        Response::redirect(BASE_URL . 'editor/posts.php?' . http_build_query(['status' => $filter, 'view' => $postId]));
+                    }
+                    $publishAt = $parsed->format('Y-m-d H:i:s');
+                }
+                $changed = $model->review($postId, (int) $user['id'], $action, $note, $publishAt);
                 if ($changed) {
-                    $_SESSION['editor_success'] = $action === 'approve'
-                        ? 'Đã duyệt bài viết thành công.' : 'Đã từ chối bài viết.';
+                    if ($action === 'reject') {
+                        $_SESSION['editor_success'] = 'Đã từ chối bài viết.';
+                    } else {
+                        $reviewed = $model->findForReview($postId);
+                        $_SESSION['editor_success'] = !empty($reviewed['is_scheduled'])
+                            ? 'Đã duyệt. Bài sẽ hiển thị công khai lúc ' . date('H:i d/m/Y', strtotime((string) $reviewed['published_at'])) . '.'
+                            : 'Đã duyệt bài viết thành công.';
+                    }
                 }
             }
             Response::redirect(BASE_URL . 'editor/posts.php?' . http_build_query(['status' => $filter, 'view' => $postId]));

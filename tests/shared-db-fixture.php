@@ -4,7 +4,7 @@ declare(strict_types=1);
 if (($argv[1] ?? '') !== '--allow-shared-vps') exit("Explicit shared database authorization required\n");
 $action = $argv[2] ?? '';
 $run = $argv[3] ?? '';
-if (!preg_match('/^qa-ly-[a-f0-9]{16}$/', $run)) exit("Invalid run id\n");
+if (!preg_match('/^qa-shared-[a-f0-9]{16}$/', $run)) exit("Invalid run id\n");
 require __DIR__ . '/../config/database.php';
 $pdo = db();
 if ($pdo->query('SELECT @@hostname')->fetchColumn() !== 'vultr-01'

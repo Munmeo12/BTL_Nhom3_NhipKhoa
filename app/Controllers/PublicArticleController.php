@@ -45,6 +45,14 @@ final class PublicArticleController extends Controller
                 $posts = new Post($pdo);
                 $post = $posts->findPublished($postId);
                 if ($post !== null) {
+                    // Chỉ tính lượt xem của độc giả và khách (admin, biên tập viên, tác giả không tính).
+                    // Mỗi phiên chỉ tính 1 lượt cho mỗi bài, chỉ khi mở trang bằng GET.
+                    $countsAsReader = $currentUser === null || ($currentUser['role'] ?? 'reader') === 'reader';
+                    if ($countsAsReader && !$request->isPost() && empty($_SESSION['viewed_posts'][$postId])) {
+                        $posts->incrementViews($postId);
+                        $_SESSION['viewed_posts'][$postId] = true;
+                        $post['view_count'] = (int) ($post['view_count'] ?? 0) + 1;
+                    }
                     $comments = (new Comment($pdo))->approvedForPost($postId);
                     $tags = (new Tag($pdo))->forPost($postId);
                     $related = $posts->relatedPublished((int) $post['category_id'], $postId);
@@ -70,8 +78,15 @@ final class PublicArticleController extends Controller
                     if ((new User($pdo))->status((int) $currentUser['id']) !== 'active') {
                         $commentError = 'Tài khoản của bạn không còn hoạt động nên không thể bình luận.';
                     } else {
-                        (new Comment($pdo))->createPending($postId, (int) $currentUser['id'], $commentContent);
-                        $_SESSION['comment_success'] = 'Bình luận đã được gửi và đang chờ duyệt.';
+                        $status = (new Comment($pdo))->createForRole(
+                            $postId,
+                            (int) $currentUser['id'],
+                            $commentContent,
+                            (string) ($currentUser['role'] ?? 'reader')
+                        );
+                        $_SESSION['comment_success'] = $status === 'approved'
+                            ? 'Bình luận đã được đăng.'
+                            : 'Bình luận đã được gửi và đang chờ duyệt.';
                         Response::redirect(publicDetailUrl($postId, $context, BASE_URL));
                     }
                 } catch (PDOException) {

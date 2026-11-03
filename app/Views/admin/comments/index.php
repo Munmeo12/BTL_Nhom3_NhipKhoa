@@ -490,6 +490,9 @@
                                 ENT_QUOTES,
                                 'UTF-8'
                             ) ?>
+                            <?php $rl = ['admin' => 'Quản trị viên', 'editor' => 'Biên tập viên', 'author' => 'Tác giả'][$item['user_role'] ?? ''] ?? ''; if ($rl !== ''): ?>
+                                <small style="display:block;color:#747f92;font-size:10px"><?= htmlspecialchars($rl, ENT_QUOTES, 'UTF-8') ?></small>
+                            <?php endif; ?>
 
                         </td>
 

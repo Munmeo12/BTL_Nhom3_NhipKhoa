@@ -46,6 +46,8 @@ CREATE TABLE posts (
     status ENUM('draft', 'pending', 'published', 'rejected') NOT NULL DEFAULT 'draft',
     editor_note TEXT NULL,
     published_at DATETIME NULL,
+    view_count INT UNSIGNED NOT NULL DEFAULT 0,
+    is_featured TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_posts_category

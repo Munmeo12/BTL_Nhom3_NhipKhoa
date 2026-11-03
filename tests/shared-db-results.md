@@ -1,6 +1,9 @@
-# Ly integration verification — 2026-09-08
+# Kiểm thử tích hợp trên database dùng chung — ghi nhận ngày 2026-09-08
 
-Application revision tested: `79ff319`, incorporating Ly `b9de069` and the earlier Quynh merge.
+> Đây là kết quả một lần chạy cũ trên phiên bản code tại thời điểm đó. Hãy chạy lại trước khi nộp bài.
+> Script nay có tên `shared-db-browser.cjs`; tiền tố bản ghi thử đổi từ `qa-ly-` thành `qa-shared-`.
+
+Application revision tested: `79ff319`, incorporating commit `b9de069` (category, comment and Impact Box work).
 
 ## Result
 
@@ -17,23 +20,23 @@ Admin routes, menu/CSS URLs, login/logout, reader access denial, category create
 
 ## Running again
 
-`tests/ly-shared-browser.cjs` is deliberately opt-in via `--allow-shared-vps`. It creates temporary users (including an Admin), categories, posts and a comment visible on the shared site while running. It uses the project's configured database credentials; do not run without authorization for shared database writes. Set `PLAYWRIGHT_MODULE` and optionally `PHP_BINARY`/`CHROME_BINARY` to local runtime paths, then execute:
+`tests/shared-db-browser.cjs` is deliberately opt-in via `--allow-shared-vps`. It creates temporary users (including an Admin), categories, posts and a comment visible on the shared site while running. It uses the project's configured database credentials; do not run without authorization for shared database writes. Set `PLAYWRIGHT_MODULE` and optionally `PHP_BINARY`/`CHROME_BINARY` to local runtime paths, then execute:
 
 ```text
-node tests/ly-shared-browser.cjs --allow-shared-vps
+node tests/shared-db-browser.cjs --allow-shared-vps
 ```
 
 The fixture helper refuses a database other than `nhip_khoa` on `vultr-01`. A per-run ID journal is retained in the OS temporary directory (no passwords). Cleanup runs in `finally`; if the process is forcibly terminated, use the run ID from the output with:
 
 ```text
-php tests/ly-shared-fixture.php --allow-shared-vps cleanup qa-ly-<16-hex-run-id>
+php tests/shared-db-fixture.php --allow-shared-vps cleanup qa-shared-<16-hex-run-id>
 ```
 
 Cleanup only targets the tagged fixture. Unexpected interactions on test posts stop cleanup for manual review rather than cascading into another user's data.
 
 ## Not covered / unchanged scope
 
-- Tuyet's separate comment-submission branch is not merged; comments were seeded as fixtures to test Ly's moderation.
+- The separate comment-submission branch was not merged then; comments were seeded as fixtures to test moderation.
 - Homepage heart buttons and dynamic Impact Summary are still separate integration work.
 - No schema/seed import, shared database reset, GitHub push or copy to the separate XAMPP checkout.
 - The pre-existing uncommitted edit in `config/config.local.example.php` is excluded from commits and remains untouched.

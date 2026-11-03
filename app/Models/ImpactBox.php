@@ -19,7 +19,7 @@ final class ImpactBox
              FROM impact_box_items ib
              INNER JOIN posts p ON p.id = ib.post_id
              INNER JOIN categories c ON c.id = p.category_id
-             WHERE ib.user_id = ? AND p.status = 'published' AND c.status = 'active'
+             WHERE ib.user_id = ? AND p.status = 'published' AND (p.published_at IS NULL OR p.published_at <= NOW()) AND c.status = 'active'
              ORDER BY ib.created_at DESC"
         );
         $statement->execute([$userId]);
@@ -35,7 +35,7 @@ final class ImpactBox
              INNER JOIN posts p ON p.id = ib.post_id
              INNER JOIN categories c ON c.id = p.category_id
              WHERE ib.user_id = ? AND ib.post_id = ?
-               AND p.status = 'published' AND c.status = 'active'
+               AND p.status = 'published' AND (p.published_at IS NULL OR p.published_at <= NOW()) AND c.status = 'active'
              LIMIT 1"
         );
         $statement->execute([$userId, $postId]);
@@ -52,7 +52,7 @@ final class ImpactBox
         $statement = $this->pdo->prepare(
             "SELECT p.id FROM posts p
              INNER JOIN categories c ON c.id = p.category_id
-             WHERE p.id = ? AND p.status = 'published' AND c.status = 'active' LIMIT 1"
+             WHERE p.id = ? AND p.status = 'published' AND (p.published_at IS NULL OR p.published_at <= NOW()) AND c.status = 'active' LIMIT 1"
         );
         $statement->execute([$postId]);
         return $statement->fetchColumn() !== false;

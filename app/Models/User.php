@@ -112,7 +112,7 @@ final class User
     public function adminTarget(int $id): ?array
     {
         $statement = $this->pdo->prepare(
-            'SELECT u.status, r.code AS role FROM users u INNER JOIN roles r ON r.id = u.role_id WHERE u.id = ?'
+            'SELECT u.status, u.full_name, r.code AS role FROM users u INNER JOIN roles r ON r.id = u.role_id WHERE u.id = ?'
         );
         $statement->execute([$id]);
         return $statement->fetch() ?: null;
