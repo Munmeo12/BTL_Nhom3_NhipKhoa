@@ -26,9 +26,16 @@
 - Quản lý bình luận: danh sách, lọc theo bài viết và trạng thái, xem chi tiết,
   duyệt/ẩn/hiện/xóa qua endpoint JSON.
 
-## Đang chờ branch khác
+## Đã bổ sung thêm
 
-- Chi tiết “Thay đổi đáng chú ý”.
+- Thẻ bài viết (CRUD ở Admin, gắn khi tạo/sửa bài, lọc theo thẻ), yêu cầu làm tác giả.
+- Gỡ bài và xóa bài (Admin), hẹn giờ xuất bản, bài nổi bật, lượt xem, RSS.
+- Mật khẩu đăng ký bắt buộc đủ chữ hoa, chữ thường, số, ký tự đặc biệt; nút hiện/ẩn mật khẩu.
+- Khóa tài khoản hoặc đổi vai trò có hiệu lực ngay (đối chiếu CSDL mỗi request).
+
+## Còn là trang "Đang phát triển"
+
+- Chi tiết “Thay đổi đáng chú ý”, Hướng dẫn, FAQ, Liên hệ, Góp ý.
 
 Các liên kết chờ tích hợp phải dẫn tới `dang-phat-trien.php`; không dùng `href="#"`.
 Sau khi merge chức năng thật, thay liên kết chờ bằng URL tương ứng và kiểm tra lại role.

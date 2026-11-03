@@ -109,7 +109,7 @@
                             <span class="status <?= $selectedPost['status'] ?>">
                                 <?php
                                 if ($selectedPost['status']==='pending') echo 'Chờ duyệt';
-                                elseif ($selectedPost['status']==='published') echo 'Đã duyệt';
+                                elseif ($selectedPost['status']==='published') echo !empty($selectedPost['is_scheduled']) ? 'Hẹn đăng ' . date('H:i d/m/Y', strtotime((string) $selectedPost['published_at'])) : 'Đã duyệt';
                                 else echo 'Từ chối';
                                 ?>
                             </span>
@@ -148,8 +148,20 @@
 
                         <form method="POST" onsubmit="return confirm('Bạn chắc chắn muốn duyệt bài này?')"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
                             <input type="hidden" name="post_id" value="<?= $selectedPost['id'] ?>">
+                            <label class="schedule-field">Hẹn giờ đăng (không bắt buộc)
+                                <input type="datetime-local" name="publish_at"></label>
                             <button type="submit" name="action" value="approve" class="approve-btn">
                                 <i class="fa-solid fa-check"></i> Duyệt bài
+                            </button>
+                        </form>
+                    </div>
+                <?php elseif ($selectedPost['status']==='published'): ?>
+                    <div class="detail-actions">
+                        <span class="view-count"><?= (int) $selectedPost['view_count'] ?> lượt xem</span>
+                        <form method="POST"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>">
+                            <input type="hidden" name="post_id" value="<?= $selectedPost['id'] ?>">
+                            <button type="submit" name="action" value="<?= $selectedPost['is_featured'] ? 'unfeature' : 'feature' ?>" class="approve-btn">
+                                <i class="fa-solid fa-star"></i> <?= $selectedPost['is_featured'] ? 'Bỏ nổi bật' : 'Đặt nổi bật' ?>
                             </button>
                         </form>
                     </div>

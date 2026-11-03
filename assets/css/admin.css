@@ -125,3 +125,26 @@
 .tag-row-actions form{margin:0}
 .tag-row-actions .status-action{display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 14px;cursor:pointer}
 @media(max-width:900px){.tag-admin-grid{grid-template-columns:1fr}}
+
+/* ===== Khung dùng chung cho Admin / Biên tập viên / Tác giả ===== */
+.admin-sidebar{overflow-y:auto}
+.admin-nav-home{margin-bottom:8px;padding-bottom:13px!important;border-bottom:1px solid rgba(255,255,255,.1);border-radius:8px 8px 0 0!important}
+.admin-main.panel-flush{padding:0}
+.admin-main.panel-flush>*:first-child{margin-top:0}
+.panel-author .admin-main,.panel-editor .admin-main{min-height:calc(100vh - 82px - 52px)}
+.admin-profile button{font-family:Inter,sans-serif}
+@media(max-width:760px){.admin-nav-home{margin-bottom:0;padding-bottom:9px!important;border-bottom:0;border-radius:8px!important}}
+.admin-workspace{display:flex;flex-direction:column;min-height:100vh}.admin-workspace>.admin-main{flex:1}
+
+/* ===== Trang tài khoản: đổi vai trò qua hộp xác nhận ===== */
+.account-actions{display:flex;gap:8px;align-items:center}
+.status-action.role-open{color:var(--wine);background:#eef2f9}
+.admin-modal-box .role-select{width:100%;height:40px;padding:0 10px;border:1px solid #ccd1db;border-radius:8px;font:13px Inter,sans-serif}
+.admin-modal-box .status-action.view{border:0;cursor:pointer}
+
+/* Lịch xuất bản / nổi bật / lượt xem trong màn hình duyệt bài */
+.schedule-form{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.schedule-field{display:flex;flex-direction:column;gap:4px;font-size:11px;color:#49576e}
+.schedule-field input{height:36px;padding:0 8px;border:1px solid #ccd1db;border-radius:7px;font:12px Inter,sans-serif}
+.post-detail-actions .view-count{margin-right:auto;align-self:center;color:#49576e;font-size:12px}
+.post-detail-actions{flex-wrap:wrap}

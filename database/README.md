@@ -2,7 +2,7 @@
 
 ## Các file
 
-- [`schema.sql`](schema.sql): tạo database `nhip_khoa` và 6 bảng chính.
+- [`schema.sql`](schema.sql): tạo database `nhip_khoa`: 6 bảng chính và 3 bảng bổ sung.
 - [`seed.sql`](seed.sql): thêm vai trò, thành viên, danh mục, bài viết và dữ liệu thử.
 - [`erd.md`](erd.md): ERD của nhóm viết bằng Mermaid.
 
@@ -11,11 +11,14 @@
 | Bảng | Mục đích |
 | --- | --- |
 | `roles` | Danh sách vai trò trong hệ thống |
-| `users` | Tài khoản quản trị, biên tập viên và tác giả |
+| `users` | Tài khoản của bốn vai trò: admin, biên tập viên, tác giả, độc giả |
 | `categories` | Danh mục bài viết |
 | `posts` | Nội dung và trạng thái kiểm duyệt bài viết |
 | `comments` | Bình luận và trạng thái duyệt/ẩn |
 | `impact_box_items` | Bài viết người dùng đã lưu và ghi chú |
+| `author_requests` | Yêu cầu xin nâng quyền Độc giả lên Tác giả |
+| `tags` | Thẻ bài viết |
+| `post_tags` | Quan hệ nhiều-nhiều giữa bài viết và thẻ |
 
 ## Thứ tự chạy
 
@@ -45,3 +48,9 @@ ID bài, bình luận và các mục trong Impact Box được giữ nguyên.
 
 Ảnh upload vẫn là file trên máy chạy PHP. Dùng chung MySQL không đồng bộ file ảnh;
 cần chép ảnh tương ứng hoặc thiết lập kho ảnh chung ở đợt triển khai riêng.
+
+## Chức năng nâng cao (lượt xem, bài nổi bật, lịch xuất bản)
+
+Với database đã có sẵn, chạy một lần `migrations/2026_11_03_advanced_features.sql`
+(thêm `posts.view_count`, `posts.is_featured`). Database tạo mới từ `schema.sql` đã có sẵn hai cột này.
+Lịch xuất bản dùng cột `published_at`: bài `published` nhưng `published_at` còn ở tương lai thì chưa hiển thị cho khách.

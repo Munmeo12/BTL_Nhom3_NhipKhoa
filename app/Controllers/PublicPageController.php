@@ -27,11 +27,12 @@ final class PublicPageController extends Controller
         'gop-y' => 'Góp ý',
     ];
 
+    // Nếu giảng viên yêu cầu mã sinh viên, điền vào khóa 'mssv'; cột chỉ hiện khi có dữ liệu.
     private const MEMBERS = [
-        ['mssv' => '224001812', 'name' => 'Khổng Thị Lý'],
-        ['mssv' => '224001828', 'name' => 'Trần Hà Như Quỳnh'],
-        ['mssv' => '224001819', 'name' => 'Trần Nguyễn Bình Nguyên'],
-        ['mssv' => '224001843', 'name' => 'Đặng Ánh Tuyết'],
+        ['mssv' => '', 'name' => 'Trần Thị Hà Anh', 'role' => 'Nhóm trưởng - Admin'],
+        ['mssv' => '', 'name' => 'Nguyễn Hải Vân', 'role' => 'Biên tập viên'],
+        ['mssv' => '', 'name' => 'Đào Khánh Trung', 'role' => 'Tác giả'],
+        ['mssv' => '', 'name' => 'Nguyễn Trung Vũ Học', 'role' => 'Độc giả'],
     ];
 
     public function about(): void

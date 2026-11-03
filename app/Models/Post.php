@@ -15,14 +15,15 @@ final class Post
     {
         $statement = $this->pdo->prepare(
             "SELECT p.id, p.title, p.summary, p.thumbnail, p.published_at, p.created_at,
+                    p.view_count, p.is_featured,
                     c.name AS category_name, c.slug AS category_slug, u.full_name AS author_name
              FROM posts p
              INNER JOIN categories c ON c.id = p.category_id
              INNER JOIN users u ON u.id = p.author_id
-             WHERE p.status = 'published'
+             WHERE p.status = 'published' AND (p.published_at IS NULL OR p.published_at <= NOW())
                AND c.status = 'active'
                AND c.slug IN ('tin-khoa', 'hoc-tap', 'co-hoi', 'su-kien')
-             ORDER BY COALESCE(p.published_at, p.created_at) DESC, p.id DESC
+             ORDER BY p.is_featured DESC, COALESCE(p.published_at, p.created_at) DESC, p.id DESC
              LIMIT ?"
         );
         $statement->bindValue(1, max(1, $limit), PDO::PARAM_INT);
@@ -32,7 +33,7 @@ final class Post
 
     public function publishedList(?string $category, string $keyword, int $page, int $perPage = 6, ?string $tag = null): array
     {
-        $where = "p.status = 'published' AND c.status = 'active'";
+        $where = "p.status = 'published' AND (p.published_at IS NULL OR p.published_at <= NOW()) AND c.status = 'active'";
         $arguments = [];
         if ($category !== null) {
             $where .= ' AND c.slug = ?';
@@ -59,6 +60,7 @@ final class Post
 
         $statement = $this->pdo->prepare(
             'SELECT p.id, p.title, p.summary, p.thumbnail, p.published_at, p.created_at,
+                    p.view_count, p.is_featured,
                     c.name AS category_name, c.slug AS category_slug, u.full_name AS author_name' .
             $joins . 'WHERE ' . $where .
             ' ORDER BY COALESCE(p.published_at, p.created_at) DESC, p.id DESC LIMIT ? OFFSET ?'
@@ -85,7 +87,7 @@ final class Post
              FROM posts p
              INNER JOIN categories c ON c.id = p.category_id
              INNER JOIN users u ON u.id = p.author_id
-             WHERE p.id = ? AND p.status = 'published' AND c.status = 'active'
+             WHERE p.id = ? AND p.status = 'published' AND (p.published_at IS NULL OR p.published_at <= NOW()) AND c.status = 'active'
              LIMIT 1"
         );
         $statement->execute([$id]);
@@ -99,7 +101,7 @@ final class Post
              FROM posts p
              INNER JOIN categories c ON c.id = p.category_id
              WHERE p.category_id = ? AND p.id <> ?
-               AND p.status = 'published' AND c.status = 'active'
+               AND p.status = 'published' AND (p.published_at IS NULL OR p.published_at <= NOW()) AND c.status = 'active'
              ORDER BY COALESCE(p.published_at, p.created_at) DESC, p.id DESC
              LIMIT ?"
         );
@@ -133,7 +135,9 @@ final class Post
 
     public function byAuthor(int $authorId, ?string $status = null, ?int $limit = null): array
     {
-        $sql = 'SELECT p.id, p.title, p.status, p.updated_at, c.name AS category_name
+        $sql = 'SELECT p.id, p.title, p.status, p.updated_at, p.published_at,
+                       (p.published_at IS NOT NULL AND p.published_at > NOW()) AS is_scheduled,
+                       c.name AS category_name
                 FROM posts p LEFT JOIN categories c ON c.id = p.category_id
                 WHERE p.author_id = ?';
         $arguments = [$authorId];
@@ -159,7 +163,8 @@ final class Post
     public function findOwned(int $postId, int $authorId): ?array
     {
         $statement = $this->pdo->prepare(
-            'SELECT p.*, c.name AS category_name, u.full_name AS author_name
+            'SELECT p.*, (p.published_at IS NOT NULL AND p.published_at > NOW()) AS is_scheduled,
+                    c.name AS category_name, u.full_name AS author_name
              FROM posts p
              LEFT JOIN categories c ON c.id = p.category_id
              LEFT JOIN users u ON u.id = p.author_id
@@ -189,7 +194,7 @@ final class Post
     public function updateOwned(int $postId, int $authorId, array $values, bool $submit): bool
     {
         $reviewReset = $submit
-            ? ', reviewer_id = NULL, editor_note = NULL, published_at = NULL'
+            ? ', reviewer_id = NULL, editor_note = NULL, published_at = NULL, is_featured = 0'
             : '';
         $statement = $this->pdo->prepare(
             'UPDATE posts SET category_id = :category_id, title = :title, summary = :summary,
@@ -251,7 +256,8 @@ final class Post
         $pages = max(1, (int) ceil($total / $perPage));
         $page = max(1, min($page, $pages));
         $statement = $this->pdo->prepare(
-            'SELECT p.id, p.title, p.thumbnail, p.status, p.created_at,
+            'SELECT p.id, p.title, p.thumbnail, p.status, p.created_at, p.published_at, p.is_featured,
+                    (p.published_at IS NOT NULL AND p.published_at > NOW()) AS is_scheduled,
                     u.full_name AS author_name, c.name AS category_name
              FROM posts p INNER JOIN users u ON u.id = p.author_id
              LEFT JOIN categories c ON c.id = p.category_id
@@ -270,7 +276,8 @@ final class Post
     public function findForReview(int $postId): ?array
     {
         $statement = $this->pdo->prepare(
-            "SELECT p.*, u.full_name AS author_name, c.name AS category_name
+            "SELECT p.*, (p.published_at IS NOT NULL AND p.published_at > NOW()) AS is_scheduled,
+                    u.full_name AS author_name, c.name AS category_name
              FROM posts p INNER JOIN users u ON u.id = p.author_id
              LEFT JOIN categories c ON c.id = p.category_id
              WHERE p.id = ? AND p.status IN ('pending','published','rejected') LIMIT 1"
@@ -283,10 +290,12 @@ final class Post
     public function unpublish(int $postId, int $adminId, string $note): bool
     {
         $statement = $this->pdo->prepare(
-            "UPDATE posts SET status = 'rejected', reviewer_id = ?, editor_note = ?, published_at = NULL
+            "UPDATE posts SET status = 'rejected', reviewer_id = ?, editor_note = ?, published_at = NULL, is_featured = 0
              WHERE id = ? AND status = 'published'"
         );
-        $statement->execute([$adminId, $note, $postId]);
+        // Không có trạng thái riêng cho "gỡ bài": dùng rejected và đánh dấu trong lý do
+        // để tác giả thấy bài bị gỡ chứ không phải bị từ chối lúc duyệt.
+        $statement->execute([$adminId, '[Gỡ bài] ' . $note, $postId]);
         return $statement->rowCount() === 1;
     }
 
@@ -298,14 +307,19 @@ final class Post
         return $statement->rowCount() === 1;
     }
 
-    public function review(int $postId, int $editorId, string $action, ?string $note = null): bool
+    /**
+     * Duyệt hoặc từ chối bài. Khi duyệt có thể hẹn giờ ($publishAt, dạng 'Y-m-d H:i:s'):
+     * nếu thời điểm đó còn ở tương lai (so với giờ MySQL) thì bài chỉ hiển thị từ lúc đó,
+     * ngược lại đăng ngay.
+     */
+    public function review(int $postId, int $editorId, string $action, ?string $note = null, ?string $publishAt = null): bool
     {
         if ($action === 'approve') {
             $statement = $this->pdo->prepare(
                 "UPDATE posts SET status = 'published', reviewer_id = ?, editor_note = NULL,
-                 published_at = NOW() WHERE id = ? AND status = 'pending'"
+                 published_at = IF(? > NOW(), ?, NOW()) WHERE id = ? AND status = 'pending'"
             );
-            $statement->execute([$editorId, $postId]);
+            $statement->execute([$editorId, $publishAt, $publishAt, $postId]);
         } else {
             $statement = $this->pdo->prepare(
                 "UPDATE posts SET status = 'rejected', reviewer_id = ?, editor_note = ?,
@@ -313,6 +327,24 @@ final class Post
             );
             $statement->execute([$editorId, $note, $postId]);
         }
+        return $statement->rowCount() === 1;
+    }
+
+    /** Tăng lượt xem của bài đang hiển thị công khai. */
+    public function incrementViews(int $postId): void
+    {
+        $statement = $this->pdo->prepare(
+            "UPDATE posts SET view_count = view_count + 1
+             WHERE id = ? AND status = 'published' AND (published_at IS NULL OR published_at <= NOW())"
+        );
+        $statement->execute([$postId]);
+    }
+
+    /** Đặt hoặc bỏ nổi bật. Chỉ áp dụng cho bài đã được duyệt (published). */
+    public function setFeatured(int $postId, bool $featured): bool
+    {
+        $statement = $this->pdo->prepare("UPDATE posts SET is_featured = ? WHERE id = ? AND status = 'published'");
+        $statement->execute([$featured ? 1 : 0, $postId]);
         return $statement->rowCount() === 1;
     }
 }

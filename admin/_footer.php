@@ -1,2 +1,1 @@
-</main><footer class="admin-footer">Nhịp Khoa Admin · Dữ liệu được kiểm soát theo vai trò</footer></div></div>
-</body></html>
+<?php require dirname(__DIR__) . '/includes/panel-footer.php';

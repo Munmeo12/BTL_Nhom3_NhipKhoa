@@ -11,4 +11,6 @@ return [
     'password' => '',
     // Khi kết nối MySQL trên VPS, bỏ chú thích dòng dưới.
     // 'ssl_ca' => __DIR__ . '/certs/mysql-ca.pem',
+    // Đặt '1' nếu chứng chỉ máy chủ khớp tên host để xác minh server MySQL (mặc định '0').
+    // 'ssl_verify' => '0',
 ];

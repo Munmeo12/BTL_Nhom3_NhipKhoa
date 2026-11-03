@@ -18,7 +18,7 @@ $tabs = ['all' => ['Tất cả', 'total'], 'pending' => ['Chờ duyệt', 'pendi
 <td><?= e($post['author_name']) ?></td>
 <td><?= e($post['category_name'] ?? 'Chưa phân loại') ?></td>
 <td><?= e(date('d/m/Y', strtotime($post['created_at']))) ?></td>
-<td><span class="status-chip post-<?= e($post['status']) ?>"><?= e($statusLabels[$post['status']] ?? $post['status']) ?></span></td>
+<td><span class="status-chip post-<?= e($post['status']) ?>"><?= !empty($post['is_scheduled']) ? 'Hẹn đăng' : e($statusLabels[$post['status']] ?? $post['status']) ?></span><?= !empty($post['is_featured']) ? ' <span title="Bài nổi bật" style="color:#9c6b16">★</span>' : '' ?></td>
 <td><a class="status-action view" href="?status=<?= e($filter) ?>&amp;page=<?= (int) $page ?>&amp;view=<?= (int) $post['id'] ?>">Xem</a></td>
 </tr><?php endforeach; ?>
 <?php if (!$posts): ?><tr><td colspan="7"><div class="admin-empty"><strong>Không có bài viết</strong><span>Chưa có bài nào trong mục này.</span></div></td></tr><?php endif; ?>
@@ -35,7 +35,7 @@ $tabs = ['all' => ['Tất cả', 'total'], 'pending' => ['Chờ duyệt', 'pendi
 <div><dt>Tác giả</dt><dd><?= e($selectedPost['author_name']) ?></dd></div>
 <div><dt>Chuyên mục</dt><dd><?= e($selectedPost['category_name'] ?? 'Chưa phân loại') ?></dd></div>
 <div><dt>Ngày gửi</dt><dd><?= e(date('d/m/Y', strtotime($selectedPost['created_at']))) ?></dd></div>
-<div><dt>Trạng thái</dt><dd><span class="status-chip post-<?= e($selectedPost['status']) ?>"><?= e($statusLabels[$selectedPost['status']] ?? $selectedPost['status']) ?></span></dd></div>
+<div><dt>Trạng thái</dt><dd><span class="status-chip post-<?= e($selectedPost['status']) ?>"><?= !empty($selectedPost['is_scheduled']) ? 'Hẹn đăng' : e($statusLabels[$selectedPost['status']] ?? $selectedPost['status']) ?></span><?= !empty($selectedPost['is_featured']) ? ' <span style="color:#9c6b16">★ Nổi bật</span>' : '' ?></dd></div>
 </dl>
 <?php if ($selectedPost['thumbnail']): ?><img class="post-detail-image" src="<?= e(BASE_URL) ?>assets/uploads/<?= e($selectedPost['thumbnail']) ?>" alt=""><?php endif; ?>
 <?php if ($selectedPost['summary']): ?><p class="post-detail-summary"><?= nl2br(e((string) $selectedPost['summary'])) ?></p><?php endif; ?>
@@ -46,8 +46,10 @@ $tabs = ['all' => ['Tất cả', 'total'], 'pending' => ['Chờ duyệt', 'pendi
 <form method="post" onsubmit="return confirm('Xóa vĩnh viễn bài viết này cùng bình luận liên quan?')"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>"><button class="status-action lock" type="submit" name="action" value="delete">Xóa bài</button></form>
 <?php if ($selectedPost['status'] === 'pending'): ?>
 <button type="button" class="status-action lock" onclick="document.getElementById('rejectModal').classList.add('show')">Từ chối</button>
-<form method="post" onsubmit="return confirm('Bạn chắc chắn muốn duyệt bài này?')"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>"><button class="filter-button" type="submit" name="action" value="approve">Duyệt bài</button></form>
+<form method="post" class="schedule-form" onsubmit="return confirm('Bạn chắc chắn muốn duyệt bài này?')"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>"><label class="schedule-field">Hẹn giờ đăng (không bắt buộc)<input type="datetime-local" name="publish_at"></label><button class="filter-button" type="submit" name="action" value="approve">Duyệt bài</button></form>
 <?php elseif ($selectedPost['status'] === 'published'): ?>
+<span class="view-count"><?= (int) $selectedPost['view_count'] ?> lượt xem<?= !empty($selectedPost['is_scheduled']) ? ' · Hẹn đăng ' . e(date('H:i d/m/Y', strtotime((string) $selectedPost['published_at']))) : '' ?></span>
+<form method="post"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>"><button class="status-action view" type="submit" name="action" value="<?= $selectedPost['is_featured'] ? 'unfeature' : 'feature' ?>">★ <?= $selectedPost['is_featured'] ? 'Bỏ nổi bật' : 'Đặt nổi bật' ?></button></form>
 <button type="button" class="filter-button" onclick="document.getElementById('rejectModal').classList.add('show')">Gỡ bài</button>
 <?php endif; ?>
 </div>

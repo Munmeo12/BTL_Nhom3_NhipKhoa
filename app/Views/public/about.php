@@ -20,22 +20,25 @@
             <p>Nhóm gồm 4 thành viên cùng thực hiện bài tập lớn môn Lập trình web.</p>
         </section>
 
+        <?php $hasMssv = array_filter(array_column($members, 'mssv')) !== []; ?>
         <section class="box">
             <h2>Thành viên</h2>
             <table>
                 <thead>
                     <tr>
                         <th>STT</th>
-                        <th>Mã sinh viên</th>
+                        <?php if ($hasMssv): ?><th>Mã sinh viên</th><?php endif; ?>
                         <th>Họ và tên</th>
+                        <th>Vai trò phụ trách</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($members as $index => $member): ?>
                         <tr>
                             <td><?= $index + 1 ?></td>
-                            <td><?= e($member['mssv']) ?></td>
+                            <?php if ($hasMssv): ?><td><?= e($member['mssv']) ?></td><?php endif; ?>
                             <td><?= e($member['name']) ?></td>
+                            <td><?= e($member['role']) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -43,12 +46,12 @@
         </section>
 
         <section class="box">
-            <h2>Đề tài dự kiến</h2>
+            <h2>Đề tài</h2>
             <h3>Website tin tức/blog có trang quản trị</h3>
             <p>
-                Nhóm dự kiến làm website để đăng và quản lý các bài viết. Người
-                dùng có thể xem, tìm kiếm bài viết. Quản trị viên có thể đăng nhập
-                để thêm, sửa, xóa bài viết và danh mục.
+                Nhịp Khoa là website tin tức của khoa. Tác giả viết bài, biên tập viên
+                duyệt trước khi xuất bản, khách đọc, tìm kiếm và bình luận. Quản trị
+                viên quản lý tài khoản, chuyên mục, thẻ và bình luận.
             </p>
         </section>
     </main>

@@ -2,7 +2,7 @@
 
 ## 1. Phạm vi nhiệm vụ
 
-Người 1 (Trần Nguyễn Bình Nguyên) chịu trách nhiệm phần nền mà các thành viên
+Người 1 (Trần Thị Hà Anh, nhóm trưởng, vai trò Admin) chịu trách nhiệm phần nền mà các thành viên
 khác cùng sử dụng:
 
 1. Kết nối MySQL bằng PDO.
@@ -99,12 +99,13 @@ thuật.
 6. Đăng nhập Admin: vào được dashboard.
 7. Khóa tài khoản trong DB rồi đăng nhập lại: hệ thống từ chối.
 
-## 8. Phần tiếp theo còn phải tích hợp
+## 8. Các phần do thành viên khác phụ trách
 
-- Link chi tiết bài khi branch trang công khai được ghép.
-- Các trang Author/Editor do Người 2 thực hiện.
-- Tìm kiếm/chi tiết/responsive nâng cao do Người 3 thực hiện.
-- Bình luận/danh mục/Impact Box do Người 4 thực hiện.
+- Biên tập viên (duyệt bài, kiểm duyệt bình luận): Nguyễn Hải Vân.
+- Tác giả (tạo/sửa bài, upload ảnh, yêu cầu làm tác giả): Đào Khánh Trung.
+- Độc giả/Khách (trang công khai, tìm kiếm, bình luận, Impact Box): Nguyễn Trung Vũ Học.
+
+Chi tiết file của từng người: [`PHAN-CONG.md`](PHAN-CONG.md).
 
 ## 9. Flow Admin quản lý tài khoản
 

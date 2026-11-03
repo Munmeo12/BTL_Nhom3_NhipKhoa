@@ -40,7 +40,13 @@ final class AdminUserController extends Controller
                 if($id<=0||$id===(int)$admin['id'])throw new RuntimeException('Không thể thay đổi tài khoản Admin đang đăng nhập.');
                 $target=$model->adminTarget($id);if(!$target)throw new RuntimeException('Không tìm thấy tài khoản.');
                 if($target['role']==='admin')throw new RuntimeException('Không thể thay đổi một Admin khác tại màn hình này.');
-                if($action==='change_role'){$role=(string)$request->input('role','');if(!in_array($role,self::ROLES,true))throw new RuntimeException('Vai trò không hợp lệ.');$model->changeRole($id,$role);$_SESSION['admin_notice']='Đã cập nhật vai trò tài khoản.';}
+                if($action==='change_role'){
+                    $role=(string)$request->input('role','');
+                    if(!in_array($role,self::ROLES,true))throw new RuntimeException('Vai trò không hợp lệ.');
+                    if($target['status']!=='active')throw new RuntimeException('Hãy mở khóa tài khoản trước khi đổi vai trò.');
+                    if($target['role']===$role)throw new RuntimeException('Tài khoản đã có vai trò này.');
+                    $model->changeRole($id,$role);$_SESSION['admin_notice']='Đã đổi vai trò của '.$target['full_name'].'.';
+                }
                 elseif($action==='toggle_status'){$next=$target['status']==='active'?'locked':'active';$model->changeStatus($id,$next);$_SESSION['admin_notice']=$next==='locked'?'Đã khóa tài khoản.':'Đã mở khóa tài khoản.';}
                 else throw new RuntimeException('Thao tác không hợp lệ.');
             }catch(Throwable $e){$_SESSION['admin_error']=$e instanceof RuntimeException?$e->getMessage():'Không thể cập nhật tài khoản.';}

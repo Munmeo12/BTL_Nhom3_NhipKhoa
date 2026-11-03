@@ -39,10 +39,10 @@ sau đó trả bài về pending. Database thử được giữ lại để tái
 Chỉ chạy khi nhóm đã cho phép tạo dữ liệu thử tạm thời trên VPS:
 
 ```powershell
-node tests/ly-shared-browser.cjs --allow-shared-vps
+node tests/shared-db-browser.cjs --allow-shared-vps
 ```
 
-Script chỉ tạo bản ghi có tiền tố `[TEST] qa-ly-...`, kiểm tra quản lý danh mục,
+Script chỉ tạo bản ghi có tiền tố `[TEST] qa-shared-...`, kiểm tra quản lý danh mục,
 bình luận, Impact Box, phân quyền, đường dẫn gốc/thư mục con và giao diện responsive.
 Nó tự xóa đúng các bản ghi thử khi kết thúc, đồng thời so sánh dấu vân tay để bảo
 đảm dữ liệu có sẵn của nhóm không bị thay đổi. Không chạy lại schema hoặc seed.

@@ -14,9 +14,11 @@ final class Comment
     public function approvedForPost(int $postId): array
     {
         $statement = $this->pdo->prepare(
-            "SELECT comments.id, comments.content, comments.created_at, users.full_name
+            "SELECT comments.id, comments.content, comments.created_at, comments.user_id,
+                    users.full_name, roles.code AS role
              FROM comments
              INNER JOIN users ON users.id = comments.user_id
+             INNER JOIN roles ON roles.id = users.role_id
              WHERE comments.post_id = ? AND comments.status = 'approved'
              ORDER BY comments.created_at DESC, comments.id DESC"
         );
@@ -26,18 +28,32 @@ final class Comment
 
     public function createPending(int $postId, int $userId, string $content): bool
     {
+        return $this->create($postId, $userId, $content, 'pending');
+    }
+
+    /** Quy tắc: bình luận của Admin hiển thị ngay; vai trò khác phải chờ Admin duyệt. */
+    public function createForRole(int $postId, int $userId, string $content, string $role): string
+    {
+        $status = $role === 'admin' ? 'approved' : 'pending';
+        $this->create($postId, $userId, $content, $status);
+        return $status;
+    }
+
+    private function create(int $postId, int $userId, string $content, string $status): bool
+    {
         $statement = $this->pdo->prepare(
             "INSERT INTO comments (post_id, user_id, content, status, created_at)
-             VALUES (?, ?, ?, 'pending', NOW())"
+             VALUES (?, ?, ?, ?, NOW())"
         );
-        return $statement->execute([$postId, $userId, $content]);
+        return $statement->execute([$postId, $userId, $content, $status]);
     }
 
     public function search(string $keyword = '', string $status = 'all', int $postId = 0): array
     {
         $sql = 'SELECT c.id, c.content, c.status, c.created_at,
-                       u.full_name AS user_name, p.title AS post_title
+                       u.full_name AS user_name, r.code AS user_role, p.title AS post_title
                 FROM comments c LEFT JOIN users u ON u.id = c.user_id
+                LEFT JOIN roles r ON r.id = u.role_id
                 LEFT JOIN posts p ON p.id = c.post_id WHERE 1=1';
         $parameters = [];
         if ($keyword !== '') {

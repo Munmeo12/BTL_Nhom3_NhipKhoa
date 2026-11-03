@@ -12,7 +12,7 @@ $rejectedPosts = $counts['rejected'];
     <section class="welcome-section">
         <h1>
             Xin chào,
-            <?= htmlspecialchars($_SESSION['full_name'] ?? 'Tác giả') ?>!
+            <?= htmlspecialchars($user['full_name'] ?? 'Tác giả') ?>!
         </h1>
         <p>Quản lý và theo dõi các bài viết của bạn.</p>
     </section>
@@ -130,6 +130,10 @@ $rejectedPosts = $counts['rejected'];
                             default:
                                 $statusClass = '';
                                 $statusText = 'Không xác định';
+                        }
+                        if ($post['status'] === 'published' && !empty($post['is_scheduled'])) {
+                            $statusClass = 'pending';
+                            $statusText = 'Hẹn đăng';
                         }
                         ?>
 

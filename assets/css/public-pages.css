@@ -107,3 +107,5 @@
 .public-pages .public-tags{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}
 .public-pages .public-tags a{padding:4px 12px;color:#1b3a6e;background:#eef2f9;border-radius:999px;font-size:12px;font-weight:600;text-decoration:none}
 .public-pages .public-tags a:hover{color:#fff;background:#1b3a6e}
+
+.public-pages .comment-role{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:#e8edf6;color:#1b3a6e;font-size:11px;font-weight:700;vertical-align:middle}
