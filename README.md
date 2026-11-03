@@ -41,8 +41,7 @@ Phần đăng nhập do Trần Nguyễn Bình Nguyên thực hiện trên branch
 - Dùng `htmlspecialchars()` để mã hóa dữ liệu khi hiển thị.
 - Dùng `password_verify()` để kiểm tra mật khẩu đã hash.
 - Dùng session để giữ trạng thái đăng nhập và hỗ trợ đăng xuất.
-- Form hiện vẫn dùng tài khoản mẫu để kiểm tra validation. CSDL cho tài khoản
-  đã được thiết kế ở Buổi 4 và sẽ được kết nối với PHP ở bước tiếp theo.
+- Đăng nhập hiện đã kiểm tra tài khoản thật trong MySQL (bảng `users`, `roles`).
 
 Tài khoản thử nghiệm:
 
@@ -99,7 +98,7 @@ return [
 nguồn. Chứng chỉ CA trong `config/certs/mysql-ca.pem` là chứng chỉ công khai và
 được dùng để mã hóa kết nối tới MySQL trên VPS.
 
-CSDL `nhip_khoa` gồm 6 bảng chính:
+CSDL `nhip_khoa` gồm 6 bảng chính (ngoài ra còn `author_requests` cho yêu cầu làm tác giả và `tags`, `post_tags` chưa dùng trong giao diện):
 
 - `roles`, `users`: tài khoản và phân quyền.
 - `categories`, `posts`: danh mục, nội dung và quy trình duyệt bài.
@@ -224,6 +223,7 @@ chung.
 
 - [`docs/NGUOI-1-FLOW.md`](docs/NGUOI-1-FLOW.md): nhiệm vụ, cơ chế hoạt động,
   điều kiện đăng ký/đăng nhập, phân quyền và cách demo phần Người 1.
+- [`docs/KIEM-THU.md`](docs/KIEM-THU.md): đối chiếu đề bài chủ đề 3 và 8 tình huống kiểm thử.
 - [`docs/GITHUB-FLOW.md`](docs/GITHUB-FLOW.md): cách tổ chức `main`, `develop`,
   branch chức năng và Pull Request của cả nhóm.
 

@@ -30,7 +30,7 @@ final class Post
         return $statement->fetchAll();
     }
 
-    public function publishedList(?string $category, string $keyword, int $page, int $perPage = 6): array
+    public function publishedList(?string $category, string $keyword, int $page, int $perPage = 6, ?string $tag = null): array
     {
         $where = "p.status = 'published' AND c.status = 'active'";
         $arguments = [];
@@ -39,8 +39,15 @@ final class Post
             $arguments[] = $category;
         }
         if ($keyword !== '') {
-            $where .= ' AND (p.title LIKE ? OR p.summary LIKE ? OR p.content LIKE ? OR c.name LIKE ? OR u.full_name LIKE ?)';
-            array_push($arguments, ...array_fill(0, 5, '%' . $keyword . '%'));
+            $where .= ' AND (p.title LIKE ? OR p.summary LIKE ? OR p.content LIKE ? OR c.name LIKE ? OR u.full_name LIKE ?'
+                . ' OR EXISTS (SELECT 1 FROM post_tags pt2 INNER JOIN tags t2 ON t2.id = pt2.tag_id'
+                . ' WHERE pt2.post_id = p.id AND t2.name LIKE ?))';
+            array_push($arguments, ...array_fill(0, 6, '%' . $keyword . '%'));
+        }
+        if ($tag !== null && $tag !== '') {
+            $where .= ' AND EXISTS (SELECT 1 FROM post_tags pt INNER JOIN tags t ON t.id = pt.tag_id'
+                . ' WHERE pt.post_id = p.id AND t.slug = ?)';
+            $arguments[] = $tag;
         }
 
         $joins = ' FROM posts p INNER JOIN categories c ON c.id = p.category_id INNER JOIN users u ON u.id = p.author_id ';
@@ -162,6 +169,13 @@ final class Post
         return $statement->fetch() ?: null;
     }
 
+    public function slugExists(string $slug): bool
+    {
+        $statement = $this->pdo->prepare('SELECT COUNT(*) FROM posts WHERE slug = ?');
+        $statement->execute([$slug]);
+        return (int) $statement->fetchColumn() > 0;
+    }
+
     public function create(array $values): int
     {
         $statement = $this->pdo->prepare(
@@ -263,6 +277,25 @@ final class Post
         );
         $statement->execute([$postId]);
         return $statement->fetch() ?: null;
+    }
+
+    /** Admin gỡ bài đã đăng: chuyển về trạng thái rejected kèm lý do để tác giả sửa lại. */
+    public function unpublish(int $postId, int $adminId, string $note): bool
+    {
+        $statement = $this->pdo->prepare(
+            "UPDATE posts SET status = 'rejected', reviewer_id = ?, editor_note = ?, published_at = NULL
+             WHERE id = ? AND status = 'published'"
+        );
+        $statement->execute([$adminId, $note, $postId]);
+        return $statement->rowCount() === 1;
+    }
+
+    /** Admin xóa bài viết bất kỳ (bình luận, thẻ, Impact Box liên quan bị xóa theo khóa ngoại). */
+    public function deleteAny(int $postId): bool
+    {
+        $statement = $this->pdo->prepare('DELETE FROM posts WHERE id = ?');
+        $statement->execute([$postId]);
+        return $statement->rowCount() === 1;
     }
 
     public function review(int $postId, int $editorId, string $action, ?string $note = null): bool

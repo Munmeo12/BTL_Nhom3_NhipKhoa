@@ -36,5 +36,7 @@ function publicDetailUrl(int $id, array $context = [], string $base = ''): strin
 function publicBackUrl(array $context): string
 {
     if (!$context) return 'index.php#articles';
-    return 'pages/' . $context['from'] . '.php?' . http_build_query(['q' => $context['q'], 'page' => $context['page']]);
+    $query = ['q' => $context['q'], 'page' => $context['page']];
+    if (!empty($context['tag'])) $query['tag'] = $context['tag'];
+    return 'pages/' . $context['from'] . '.php?' . http_build_query($query);
 }

@@ -34,6 +34,7 @@ $activeNav = $activeNav ?? (
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" data-site-css href="<?= e($basePath ?? '') ?>assets/css/style.css">
 <?php if (!empty($publicStyles)): ?><link rel="stylesheet" href="<?= e($basePath ?? '') ?>assets/css/public-pages.css"><?php endif; ?>
+<link rel="alternate" type="application/rss+xml" title="Nhịp Khoa RSS" href="<?= e(BASE_URL) ?>rss.php">
 </head><body>
 <div class="announcement"><div class="site-shell"><span>Thông báo: Kỳ đăng ký học phần bắt đầu từ ngày 20/05.</span><a href="<?= e($basePath ?? '') ?>index.php#featured">Xem chi tiết →</a></div></div>
 <header class="figma-header"><div class="site-shell header-inner">

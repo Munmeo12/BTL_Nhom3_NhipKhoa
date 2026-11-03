@@ -8,6 +8,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Models\Post;
 use App\Services\AuthService;
+use App\Services\ImageUploadService;
 use Closure;
 use PDO;
 
@@ -44,8 +45,24 @@ final class EditorPostController extends Controller
             $postId = (int) $request->input('post_id', 0);
             $action = (string) $request->input('action', '');
             $note = trim((string) $request->input('editor_note', ''));
+            $isAdmin = ($user['role'] ?? '') === 'admin';
             if ($action === 'reject' && $note === '') {
                 $_SESSION['editor_error'] = 'Vui lòng nhập lý do từ chối.';
+            } elseif ($action === 'unpublish' && $isAdmin) {
+                if ($note === '') {
+                    $_SESSION['editor_error'] = 'Vui lòng nhập lý do gỡ bài.';
+                } elseif ($model->unpublish($postId, (int) $user['id'], $note)) {
+                    $_SESSION['editor_success'] = 'Đã gỡ bài viết khỏi trang công khai.';
+                }
+            } elseif ($action === 'delete' && $isAdmin) {
+                $target = $model->findForReview($postId);
+                if ($target !== null && $model->deleteAny($postId)) {
+                    (new ImageUploadService(dirname(__DIR__, 2) . '/assets/uploads'))->delete($target['thumbnail'] ?? null);
+                    $_SESSION['editor_success'] = 'Đã xóa bài viết.';
+                    $postId = 0;
+                } else {
+                    $_SESSION['editor_error'] = 'Không thể xóa bài viết.';
+                }
             } elseif (in_array($action, ['approve', 'reject'], true)) {
                 $changed = $model->review($postId, (int) $user['id'], $action, $note);
                 if ($changed) {

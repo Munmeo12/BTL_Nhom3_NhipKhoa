@@ -102,3 +102,8 @@
 .public-pages .comment-login-prompt{padding:16px;background:#f9fafd;border:1px solid #d4dae5;border-radius:8px;text-align:center;margin-top:18px}
 .public-pages .comment-login-prompt p{margin:0 0 10px;font-size:14px;color:#152237}
 .public-pages .comment-login-prompt a{display:inline-block;padding:8px 16px;background:#1d3d73;color:#fff;border-radius:6px;font-weight:600;text-decoration:none}
+
+/* Thẻ bài viết */
+.public-pages .public-tags{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 18px}
+.public-pages .public-tags a{padding:4px 12px;color:#1b3a6e;background:#eef2f9;border-radius:999px;font-size:12px;font-weight:600;text-decoration:none}
+.public-pages .public-tags a:hover{color:#fff;background:#1b3a6e}

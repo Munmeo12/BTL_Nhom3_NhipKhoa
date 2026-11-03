@@ -49,6 +49,20 @@ final class User
         return is_string($status) ? $status : null;
     }
 
+    /**
+     * Trạng thái + role hiện tại trong CSDL, dùng để kiểm tra lại phiên đăng nhập.
+     */
+    public function sessionState(int $id): ?array
+    {
+        $statement = $this->pdo->prepare(
+            'SELECT u.status, u.full_name, r.code AS role
+             FROM users u INNER JOIN roles r ON r.id = u.role_id
+             WHERE u.id = ? LIMIT 1'
+        );
+        $statement->execute([$id]);
+        return $statement->fetch() ?: null;
+    }
+
     public function adminDashboard(): array
     {
         $counts = [
