@@ -5,3 +5,4 @@ require_once __DIR__ . '/../bootstrap/app.php';
     static fn(): PDO => db(), new App\Services\AuthService(),
     new App\Services\ImageUploadService(dirname(__DIR__) . '/assets/uploads'), new App\Core\View()
 ))->create(App\Core\Request::capture());
+
