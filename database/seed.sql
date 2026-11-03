@@ -15,13 +15,12 @@ INSERT INTO users (
     status,
     created_at
 ) VALUES
-    (1, 1, 'admin@nhipkhoa.vn', '$2y$10$5qOBuv285ychc3kts46L7OsmFyodolU33/K0T8QAo3dczDCzkqFga', 'Trần Nguyễn Bình Nguyên', 'active', '2026-08-20 08:00:00'),
-    (2, 2, 'quynh@nhipkhoa.vn', '$2y$10$5qOBuv285ychc3kts46L7OsmFyodolU33/K0T8QAo3dczDCzkqFga', 'Trần Hà Như Quỳnh', 'active', '2026-08-20 08:10:00'),
-    (3, 3, 'tuyet@nhipkhoa.vn', '$2y$10$5qOBuv285ychc3kts46L7OsmFyodolU33/K0T8QAo3dczDCzkqFga', 'Đặng Ánh Tuyết', 'active', '2026-08-20 08:20:00'),
-    (4, 4, 'ly@nhipkhoa.vn', '$2y$10$5qOBuv285ychc3kts46L7OsmFyodolU33/K0T8QAo3dczDCzkqFga', 'Khổng Thị Lý', 'active', '2026-08-20 08:30:00'),
+    (1, 1, 'admin@nhipkhoa.vn', '$2y$10$5qOBuv285ychc3kts46L7OsmFyodolU33/K0T8QAo3dczDCzkqFga', 'Trần Thị Hà Anh', 'active', '2026-08-20 08:00:00'),
+    (2, 2, 'van@nhipkhoa.vn', '$2y$10$5qOBuv285ychc3kts46L7OsmFyodolU33/K0T8QAo3dczDCzkqFga', 'Nguyễn Hải Vân', 'active', '2026-08-20 08:10:00'),
+    (3, 3, 'trung@nhipkhoa.vn', '$2y$10$5qOBuv285ychc3kts46L7OsmFyodolU33/K0T8QAo3dczDCzkqFga', 'Đào Khánh Trung', 'active', '2026-08-20 08:20:00'),
+    (4, 4, 'hoc@nhipkhoa.vn', '$2y$10$5qOBuv285ychc3kts46L7OsmFyodolU33/K0T8QAo3dczDCzkqFga', 'Nguyễn Trung Vũ Học', 'active', '2026-08-20 08:30:00'),
     (5, 3, 'khoa.locked@nhipkhoa.vn', '$2y$10$5qOBuv285ychc3kts46L7OsmFyodolU33/K0T8QAo3dczDCzkqFga', 'Nguyễn Minh Khoa', 'locked', '2026-08-20 08:40:00'),
     (6, 4, 'lan.locked@nhipkhoa.vn', '$2y$10$5qOBuv285ychc3kts46L7OsmFyodolU33/K0T8QAo3dczDCzkqFga', 'Phạm Hoàng Lan', 'locked', '2026-08-20 08:50:00');
-
 INSERT INTO categories (id, slug, name, status) VALUES
     (1, 'tin-khoa', 'Tin khoa', 'active'),
     (2, 'hoc-tap', 'Học tập', 'active'),
