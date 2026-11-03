@@ -27,6 +27,15 @@ $adminUser = currentUser();
     </span>
     Chuyên mục
 </a>
+<a class="<?= $adminPage === 'tags' ? 'active' : '' ?>" href="<?= e(BASE_URL) ?>admin/the.php">
+    <span class="admin-nav-icon">
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M3 12V4h8l10 10-8 8z"/>
+            <circle cx="7.5" cy="8.5" r="1.2"/>
+        </svg>
+    </span>
+    Thẻ
+</a>
 <a class="<?= $adminPage === 'comments' ? 'active' : '' ?>" href="<?= e(BASE_URL) ?>admin/binhluan.php">
     <span class="admin-nav-icon">
         <svg aria-hidden="true" viewBox="0 0 24 24">

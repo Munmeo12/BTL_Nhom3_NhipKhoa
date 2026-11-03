@@ -42,23 +42,27 @@ $tabs = ['all' => ['Tất cả', 'total'], 'pending' => ['Chờ duyệt', 'pendi
 <div class="post-detail-content"><?= nl2br(e((string) $selectedPost['content'])) ?></div>
 <?php if ($selectedPost['status'] === 'rejected' && $selectedPost['editor_note']): ?><div class="admin-alert error"><b>Lý do từ chối:</b><br><?= nl2br(e((string) $selectedPost['editor_note'])) ?></div><?php endif; ?>
 </div>
-<?php if ($selectedPost['status'] === 'pending'): ?>
 <div class="post-detail-actions">
+<form method="post" onsubmit="return confirm('Xóa vĩnh viễn bài viết này cùng bình luận liên quan?')"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>"><button class="status-action lock" type="submit" name="action" value="delete">Xóa bài</button></form>
+<?php if ($selectedPost['status'] === 'pending'): ?>
 <button type="button" class="status-action lock" onclick="document.getElementById('rejectModal').classList.add('show')">Từ chối</button>
 <form method="post" onsubmit="return confirm('Bạn chắc chắn muốn duyệt bài này?')"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>"><button class="filter-button" type="submit" name="action" value="approve">Duyệt bài</button></form>
-</div>
+<?php elseif ($selectedPost['status'] === 'published'): ?>
+<button type="button" class="filter-button" onclick="document.getElementById('rejectModal').classList.add('show')">Gỡ bài</button>
 <?php endif; ?>
+</div>
 </aside>
 <?php endif; ?>
 </div>
 
-<?php if ($selectedPost && $selectedPost['status'] === 'pending'): ?>
+<?php if ($selectedPost && in_array($selectedPost['status'], ['pending', 'published'], true)):
+    $isUnpublish = $selectedPost['status'] === 'published'; ?>
 <div class="admin-modal" id="rejectModal"><div class="admin-modal-box">
-<header><h2>Từ chối bài viết</h2><button type="button" aria-label="Đóng" onclick="document.getElementById('rejectModal').classList.remove('show')">✕</button></header>
+<header><h2><?= $isUnpublish ? 'Gỡ bài viết' : 'Từ chối bài viết' ?></h2><button type="button" aria-label="Đóng" onclick="document.getElementById('rejectModal').classList.remove('show')">✕</button></header>
 <form method="post"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>">
-<label for="editor_note">Lý do từ chối <span>*</span></label>
+<label for="editor_note"><?= $isUnpublish ? 'Lý do gỡ bài' : 'Lý do từ chối' ?> <span>*</span></label>
 <textarea id="editor_note" name="editor_note" rows="5" placeholder="Nhập lý do từ chối..." required></textarea>
-<div class="admin-modal-actions"><button type="button" class="status-action view" onclick="document.getElementById('rejectModal').classList.remove('show')">Hủy</button><button class="status-action lock" type="submit" name="action" value="reject">Xác nhận từ chối</button></div>
+<div class="admin-modal-actions"><button type="button" class="status-action view" onclick="document.getElementById('rejectModal').classList.remove('show')">Hủy</button><button class="status-action lock" type="submit" name="action" value="<?= $isUnpublish ? 'unpublish' : 'reject' ?>"><?= $isUnpublish ? 'Xác nhận gỡ bài' : 'Xác nhận từ chối' ?></button></div>
 </form></div></div>
 <script>document.getElementById('rejectModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});</script>
 <?php endif; ?>

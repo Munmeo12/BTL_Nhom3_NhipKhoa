@@ -8,6 +8,7 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Tag;
 use App\Models\User;
 use App\Services\AuthService;
 use Closure;
@@ -32,6 +33,7 @@ final class PublicArticleController extends Controller
         $post = null;
         $related = [];
         $comments = [];
+        $tags = [];
         $loadError = false;
         $commentError = '';
         $commentContent = '';
@@ -44,6 +46,7 @@ final class PublicArticleController extends Controller
                 $post = $posts->findPublished($postId);
                 if ($post !== null) {
                     $comments = (new Comment($pdo))->approvedForPost($postId);
+                    $tags = (new Tag($pdo))->forPost($postId);
                     $related = $posts->relatedPublished((int) $post['category_id'], $postId);
                 }
             } catch (PDOException) {
@@ -87,7 +90,7 @@ final class PublicArticleController extends Controller
         }
 
         $this->render('public.detail', compact(
-            'postId', 'post', 'related', 'comments', 'loadError', 'commentError',
+            'postId', 'post', 'related', 'tags', 'comments', 'loadError', 'commentError',
             'commentSuccess', 'commentContent', 'context', 'currentUser'
         ) + [
             'pageTitle' => $loadError ? 'Chưa thể tải bài viết' : ($post['title'] ?? 'Không tìm thấy bài viết'),
@@ -102,11 +105,16 @@ final class PublicArticleController extends Controller
         if (!isset(PublicPostController::CATEGORIES[$from]) && $from !== 'tim-kiem') {
             return [];
         }
-        return [
+        $context = [
             'from' => $from,
             'q' => trim((string) $request->query('q', '')),
             'page' => max(1, (int) $request->query('page', 1)),
         ];
+        $tag = trim((string) $request->query('tag', ''));
+        if ($from === 'tim-kiem' && $tag !== '') {
+            $context['tag'] = $tag;
+        }
+        return $context;
     }
 
     private function pdo(): PDO

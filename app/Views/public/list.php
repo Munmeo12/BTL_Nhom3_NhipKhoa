@@ -5,7 +5,7 @@ $q = $keyword;
 ?>
 <section class="public-pages"><div class="site-shell">
 <div class="public-heading">
-    <div><p class="public-eyebrow">NHỊP KHOA · BÀI VIẾT</p><h1><?= e($pageTitle) ?></h1><p><?= e($isSearch ? 'Tìm thông tin theo nội dung, danh mục hoặc tác giả.' : $descriptions[$category]) ?></p></div>
+    <div><p class="public-eyebrow">NHỊP KHOA · BÀI VIẾT</p><h1><?= e($pageTitle) ?></h1><p><?= e($isSearch ? (($tag ?? '') !== '' ? 'Các bài viết được gắn thẻ này.' : 'Tìm thông tin theo nội dung, danh mục, thẻ hoặc tác giả.') : $descriptions[$category]) ?></p></div>
     <?php if ($isSearch): ?><form class="public-search" action="tim-kiem.php" method="get" role="search"><label for="public-query">Từ khóa tìm kiếm</label><div><input id="public-query" name="q" type="search" value="<?= e($q) ?>" placeholder="Nhập từ khóa..."><button type="submit">Tìm kiếm</button></div></form><?php endif; ?>
 </div>
 <?php if ($loadError): ?>
@@ -28,7 +28,7 @@ $q = $keyword;
 <?php endif; ?>
 <?php if ($data['pages'] > 1): ?>
 <nav class="public-pagination" aria-label="Phân trang bài viết">
-<?php $pageUrl = static fn(int $n): string => '?' . http_build_query(['q' => $q, 'page' => $n]); ?>
+<?php $pageUrl = static fn(int $n): string => '?' . http_build_query(['q' => $q, 'page' => $n] + (($tag ?? '') !== '' ? ['tag' => $tag] : [])); ?>
 <?php if ($data['page'] > 1): ?><a href="<?= e($pageUrl($data['page'] - 1)) ?>">← Trước</a><?php endif; ?>
 <?php for ($i = max(1, $data['page'] - 2); $i <= min($data['pages'], $data['page'] + 2); $i++): ?>
 <a href="<?= e($pageUrl($i)) ?>" <?= $i === $data['page'] ? 'aria-current="page"' : '' ?>><?= $i ?></a>

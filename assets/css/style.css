@@ -1279,3 +1279,6 @@ html,body { margin:0; width:100%; }
 /* Nút "Làm tác giả" (độc giả) trên header */
 .header-actions .become-author{padding:8px 14px;color:var(--wine);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;border:1px solid var(--wine);border-radius:6px;transition:background .15s,color .15s}
 .header-actions .become-author:hover,.header-actions .become-author:focus-visible{color:#fff;background:var(--wine)}
+
+/* Gợi ý quy tắc mật khẩu ở form đăng ký */
+.figma-auth-form label small.password-hint{color:#667085;font-weight:400}

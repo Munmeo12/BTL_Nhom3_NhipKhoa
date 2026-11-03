@@ -244,6 +244,14 @@ declare(strict_types=1);
                         <?= e($post['author_name']) ?>
                     </p>
 
+                    <?php if (!empty($tags)): ?>
+                        <p class="public-tags">
+                            <?php foreach ($tags as $tag): ?>
+                                <a href="<?= e(BASE_URL) ?>pages/tim-kiem.php?tag=<?= e(urlencode($tag['slug'])) ?>">#<?= e($tag['name']) ?></a>
+                            <?php endforeach; ?>
+                        </p>
+                    <?php endif; ?>
+
                     <img
                         class="public-cover"
                         src="<?= e(

@@ -93,8 +93,13 @@ final class AuthController extends Controller
             }
             if (strlen($password) < 8 || strlen($password) > 72) {
                 $errors['password'] = 'Mật khẩu phải có từ 8 đến 72 ký tự.';
-            } elseif (!preg_match('/[A-Za-z]/', $password) || !preg_match('/\d/', $password)) {
-                $errors['password'] = 'Mật khẩu cần có ít nhất một chữ và một số.';
+            } elseif (
+                !preg_match('/[a-z]/', $password)
+                || !preg_match('/[A-Z]/', $password)
+                || !preg_match('/\d/', $password)
+                || !preg_match('/[^A-Za-z0-9\s]/', $password)
+            ) {
+                $errors['password'] = 'Mật khẩu phải có chữ hoa, chữ thường, số và ký tự đặc biệt (ví dụ: @ # $ !).';
             }
             if ($password !== $confirmation) {
                 $errors['password_confirmation'] = 'Mật khẩu nhập lại chưa khớp.';

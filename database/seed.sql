@@ -50,3 +50,14 @@ INSERT INTO comments (post_id, user_id, content, status, created_at) VALUES
 
 INSERT INTO impact_box_items (user_id, post_id, note, created_at) VALUES
     (4, 1, 'Đọc lại phần hướng dẫn MySQL trước buổi học.', '2026-08-22 10:30:00');
+
+-- Thẻ mẫu và gán thẻ cho bài mẫu
+INSERT IGNORE INTO tags (id, slug, name) VALUES
+    (1, 'lap-trinh-web', 'Lập trình web'),
+    (2, 'co-so-du-lieu', 'Cơ sở dữ liệu'),
+    (3, 'hoc-tap', 'Học tập');
+
+INSERT IGNORE INTO post_tags (post_id, tag_id) VALUES
+    (1, 1),
+    (1, 3),
+    (2, 2);

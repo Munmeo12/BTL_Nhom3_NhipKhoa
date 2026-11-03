@@ -8,8 +8,10 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 use App\Services\AuthService;
 use App\Services\ImageUploadService;
+use App\Services\Slugger;
 use Closure;
 use PDO;
 use Throwable;
@@ -79,7 +81,8 @@ final class AuthorPostController extends Controller
         $user = $this->auth->requireRole(['author']);
         $pdo = $this->pdo();
         $categories = (new Category($pdo))->forSelect();
-        $values = ['title' => '', 'category_id' => '', 'summary' => '', 'content' => ''];
+        $tags = (new Tag($pdo))->forSelect();
+        $values = ['title' => '', 'category_id' => '', 'summary' => '', 'content' => '', 'tag_ids' => []];
         $error = '';
         $success = '';
 
@@ -91,16 +94,22 @@ final class AuthorPostController extends Controller
             try {
                 if ($error === '') {
                     $thumbnail = $this->uploads->store($request->file('thumbnail'));
-                    $postId = (new Post($pdo))->create([
+                    $postModel = new Post($pdo);
+                    $slug = Slugger::unique(
+                        Slugger::slugify($values['title']),
+                        static fn(string $candidate): bool => $postModel->slugExists($candidate)
+                    );
+                    $postId = $postModel->create([
                         'author_id' => (int) $user['id'],
                         'category_id' => (int) $values['category_id'],
                         'title' => $values['title'],
-                        'slug' => 'bai-viet-' . bin2hex(random_bytes(6)),
+                        'slug' => $slug,
                         'summary' => $values['summary'],
                         'thumbnail' => $thumbnail,
                         'content' => $values['content'],
                         'status' => $values['action'] === 'submit' ? 'pending' : 'draft',
                     ]);
+                    (new Tag($pdo))->sync($postId, $values['tag_ids']);
                     $_SESSION['success'] = $values['action'] === 'submit'
                         ? 'Bài viết đã được gửi duyệt thành công.'
                         : 'Bài viết đã được lưu nháp thành công.';
@@ -114,7 +123,7 @@ final class AuthorPostController extends Controller
             }
         }
 
-        $this->render('author.create', compact('categories', 'values', 'error', 'success') + [
+        $this->render('author.create', compact('categories', 'tags', 'values', 'error', 'success') + [
             'pageTitle' => 'Tạo bài viết', 'pageCss' => 'create.css',
         ], 'layouts.author');
     }
@@ -134,10 +143,13 @@ final class AuthorPostController extends Controller
         }
 
         $categories = (new Category($pdo))->forSelect();
+        $tagModel = new Tag($pdo);
+        $tags = $tagModel->forSelect();
         $oldEditorNote = $post['editor_note'];
         $values = [
             'title' => (string) $post['title'], 'category_id' => (string) $post['category_id'],
             'summary' => (string) $post['summary'], 'content' => (string) $post['content'], 'action' => 'draft',
+            'tag_ids' => $tagModel->idsForPost($postId),
         ];
         $error = '';
         $success = '';
@@ -170,6 +182,7 @@ final class AuthorPostController extends Controller
                             'thumbnail' => $thumbnail, 'content' => $values['content'],
                             'status' => $submit ? 'pending' : 'draft',
                         ], $submit);
+                        $tagModel->sync($postId, $values['tag_ids']);
                         if ($newThumbnail !== null) {
                             $this->uploads->delete($post['thumbnail']);
                         }
@@ -182,6 +195,7 @@ final class AuthorPostController extends Controller
                         $values = [
                             'title' => (string) $post['title'], 'category_id' => (string) $post['category_id'],
                             'summary' => (string) $post['summary'], 'content' => (string) $post['content'], 'action' => 'draft',
+                            'tag_ids' => $tagModel->idsForPost($postId),
                         ];
                     }
                 } catch (Throwable $exception) {
@@ -194,7 +208,7 @@ final class AuthorPostController extends Controller
         }
 
         $this->render('author.edit', compact(
-            'post', 'postId', 'categories', 'oldEditorNote', 'values', 'error', 'success'
+            'post', 'postId', 'categories', 'tags', 'oldEditorNote', 'values', 'error', 'success'
         ) + ['pageTitle' => 'Chỉnh sửa bài viết', 'pageCss' => 'edit.css'], 'layouts.author');
     }
 
@@ -205,8 +219,19 @@ final class AuthorPostController extends Controller
             'category_id' => (string) (int) $request->input('category_id', 0),
             'summary' => trim((string) $request->input('summary', '')),
             'content' => trim((string) $request->input('content', '')),
+            'tag_ids' => $this->tagIds($request->input('tag_ids', [])),
             'action' => $request->input('action') === 'submit' ? 'submit' : 'draft',
         ];
+    }
+
+    /** @return int[] */
+    private function tagIds(mixed $raw): array
+    {
+        if (!is_array($raw)) {
+            return [];
+        }
+        $ids = array_filter(array_map('intval', $raw), static fn(int $id): bool => $id > 0);
+        return array_slice(array_values(array_unique($ids)), 0, 10);
     }
 
     private function validate(array $values): string

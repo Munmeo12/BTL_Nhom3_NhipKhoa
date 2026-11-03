@@ -322,3 +322,8 @@
         max-height: 250px;
     }
 }
+/* Thẻ (tags) trong form bài viết */
+.tag-checks{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.form-group .tag-check{display:inline-flex;align-items:center;gap:6px;margin:0;padding:6px 12px;border:1px solid #ccd1db;border-radius:999px;background:#fff;font-size:13px;font-weight:500;cursor:pointer}
+.form-group .tag-check input{width:auto;margin:0}
+.form-group .tag-check:has(input:checked){color:#fff;background:#1b3a6e;border-color:#1b3a6e}

@@ -45,6 +45,22 @@
             </select>
         </div>
 
+        <?php if (!empty($tags)): ?>
+        <div class="form-group">
+            <label>Thẻ</label>
+            <div class="tag-checks">
+                <?php foreach ($tags as $tag): ?>
+                    <label class="tag-check">
+                        <input type="checkbox" name="tag_ids[]" value="<?= (int) $tag['id'] ?>"
+                            <?= in_array((int) $tag['id'], $values['tag_ids'] ?? [], true) ? 'checked' : '' ?>>
+                        <span><?= e($tag['name']) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+            <small>Có thể chọn nhiều thẻ.</small>
+        </div>
+        <?php endif; ?>
+
         <div class="form-group">
             <label for="summary">Tóm tắt</label>
 
