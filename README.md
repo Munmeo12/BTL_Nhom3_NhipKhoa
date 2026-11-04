@@ -3,14 +3,14 @@
 Bài tập lớn môn Lập trình web, **Chủ đề 3**: cổng tin tức nhỏ cho khoa, nơi tác giả viết bài,
 biên tập viên duyệt bài, khách đọc và bình luận, quản trị viên quản lý toàn bộ nội dung.
 
-## Nhóm thực hiện
+## Nhóm thực hiện: nhóm 3
 
-| Họ và tên | Vai trò trong nhóm | Vai trò hệ thống phụ trách |
+| Họ và tên | MSSV | Vai trò trong nhóm | Vai trò hệ thống phụ trách |
 |---|---|---|
-| Trần Thị Hà Anh | Nhóm trưởng | **Admin** + nền tảng (đăng nhập, phân quyền, tài khoản, chuyên mục, thẻ) |
-| Nguyễn Hải Vân | Thành viên | **Biên tập viên** (duyệt bài, kiểm duyệt bình luận) |
-| Đào Khánh Trung | Thành viên | **Tác giả** (viết bài, upload ảnh, slug, yêu cầu làm tác giả) |
-| Nguyễn Trung Vũ Học | Thành viên | **Độc giả/Khách** (trang công khai, tìm kiếm, bình luận, Impact Box) |
+| Trần Thị Hà Anh | 224001713 | Nhóm trưởng | **Admin** + nền tảng (đăng nhập, phân quyền, tài khoản, chuyên mục, thẻ) |
+| Nguyễn Hải Vân | 224001759 | Thành viên | **Biên tập viên** (duyệt bài, kiểm duyệt bình luận) |
+| Đào Khánh Trung | 224001757 | Thành viên | **Tác giả** (viết bài, upload ảnh, slug, yêu cầu làm tác giả) |
+| Nguyễn Trung Vũ Học | 224001719 | Thành viên | **Độc giả/Khách** (trang công khai, tìm kiếm, bình luận, Impact Box) |
 
 Phạm vi file của từng người: [`docs/PHAN-CONG.md`](docs/PHAN-CONG.md).
 
@@ -91,7 +91,7 @@ Mật khẩu chung cho mọi tài khoản mẫu: `Admin@123`.
 Toàn bộ logic nằm trong `app/` (MVC). Các file `.php` ở ngoài chỉ là **điểm vào mỏng**, giữ nguyên URL.
 
 ```text
-btl_laptrinhweb/
+BTL_NhipKhoa/
 ├── index.php, bai-viet.php, dang-nhap.php, dang-ky.php, rss.php, ...   ← điểm vào công khai
 ├── admin/ author/ editor/ pages/ views/                                ← điểm vào theo khu vực
 ├── bootstrap/app.php     session, BASE_URL, autoload, e()/csrfToken()/verifyCsrf()
