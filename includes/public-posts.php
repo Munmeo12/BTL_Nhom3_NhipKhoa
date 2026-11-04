@@ -38,5 +38,29 @@ function publicBackUrl(array $context): string
     if (!$context) return 'index.php#articles';
     $query = ['q' => $context['q'], 'page' => $context['page']];
     if (!empty($context['tag'])) $query['tag'] = $context['tag'];
-    return 'pages/' . $context['from'] . '.php?' . http_build_query($query);
+    $url = publicCategoryUrl((string) $context['from']);
+    return $url . (str_contains($url, '?') ? '&' : '?') . http_build_query($query);
+}
+
+/** 4 chuyên mục gốc có file riêng trong pages/; chuyên mục thêm mới dùng pages/danh-muc.php?slug=... */
+function publicCategoryUrl(string $slug, string $base = ''): string
+{
+    if ($slug === 'tim-kiem' || isset(PUBLIC_CATEGORIES[$slug])) {
+        return $base . 'pages/' . $slug . '.php';
+    }
+    return $base . 'pages/danh-muc.php?' . http_build_query(['slug' => $slug]);
+}
+
+/** Chuyên mục đang hiển thị nhưng không thuộc 4 chuyên mục gốc (cho menu "Chuyên mục khác"). */
+function publicExtraCategories(): array
+{
+    try {
+        $rows = (new App\Models\Category(db()))->activeList();
+    } catch (Throwable) {
+        return [];
+    }
+    return array_values(array_filter(
+        $rows,
+        static fn(array $row): bool => !isset(PUBLIC_CATEGORIES[$row['slug']])
+    ));
 }

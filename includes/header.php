@@ -26,6 +26,10 @@ $activeNav = $activeNav ?? (
         ? 'home'
         : ''
 );
+
+// Chuyên mục thêm mới (ngoài 4 chuyên mục gốc) hiện trong mục "Chuyên mục khác".
+$extraCategories = publicExtraCategories();
+$moreActive = in_array($activeNav, array_column($extraCategories, 'slug'), true);
 ?>
 <!doctype html><html lang="vi"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -40,7 +44,7 @@ $activeNav = $activeNav ?? (
 <header class="figma-header"><div class="site-shell header-inner">
     <a class="figma-logo" href="<?= e($basePath ?? '') ?>index.php"><img src="<?= e($basePath ?? '') ?>assets/images/figma/brand-logo.png" alt="Nhịp Khoa - The Faculty Post"></a>
     <nav class="desktop-nav" id="primary-navigation" aria-label="Điều hướng chính">
-        <a <?= $activeNav === 'home' ? 'class="active" aria-current="page"' : '' ?> href="<?= e($basePath ?? '') ?>index.php">Trang chủ</a><a <?= $activeNav === 'tin-khoa' ? 'class="active" aria-current="page"' : '' ?> href="<?= e($basePath ?? '') ?>pages/tin-khoa.php">Tin khoa</a><a <?= $activeNav === 'hoc-tap' ? 'class="active" aria-current="page"' : '' ?> href="<?= e($basePath ?? '') ?>pages/hoc-tap.php">Học tập</a><a <?= $activeNav === 'co-hoi' ? 'class="active" aria-current="page"' : '' ?> href="<?= e($basePath ?? '') ?>pages/co-hoi.php">Cơ hội</a><a <?= $activeNav === 'su-kien' ? 'class="active" aria-current="page"' : '' ?> href="<?= e($basePath ?? '') ?>pages/su-kien.php">Sự kiện</a><a href="<?= e($basePath ?? '') ?>views/impact-box.php">Hộp tác động</a>
+        <a <?= $activeNav === 'home' ? 'class="active" aria-current="page"' : '' ?> href="<?= e($basePath ?? '') ?>index.php">Trang chủ</a><a <?= $activeNav === 'tin-khoa' ? 'class="active" aria-current="page"' : '' ?> href="<?= e($basePath ?? '') ?>pages/tin-khoa.php">Tin khoa</a><a <?= $activeNav === 'hoc-tap' ? 'class="active" aria-current="page"' : '' ?> href="<?= e($basePath ?? '') ?>pages/hoc-tap.php">Học tập</a><a <?= $activeNav === 'co-hoi' ? 'class="active" aria-current="page"' : '' ?> href="<?= e($basePath ?? '') ?>pages/co-hoi.php">Cơ hội</a><a <?= $activeNav === 'su-kien' ? 'class="active" aria-current="page"' : '' ?> href="<?= e($basePath ?? '') ?>pages/su-kien.php">Sự kiện</a><?php if ($extraCategories): ?><details class="nav-more"><summary<?= $moreActive ? ' class="active"' : '' ?>>Chuyên mục khác</summary><div class="nav-more-menu"><?php foreach ($extraCategories as $extra): ?><a <?= $activeNav === $extra['slug'] ? 'class="active" aria-current="page"' : '' ?> href="<?= e(publicCategoryUrl((string) $extra['slug'], $basePath)) ?>"><?= e($extra['name']) ?></a><?php endforeach; ?></div></details><?php endif; ?><a href="<?= e($basePath ?? '') ?>views/impact-box.php">Hộp tác động</a>
     </nav>
     <div class="header-actions"><form class="expanding-search" role="search" method="get" action="<?= e($basePath ?? '') ?>pages/tim-kiem.php"><input class="search-input" type="search" name="q" placeholder="Tìm kiếm bài viết..." aria-label="Nhập từ khóa tìm kiếm" autocomplete="off"><button class="search-circle" type="submit" aria-label="Mở tìm kiếm" aria-expanded="false"><img src="<?= e($basePath ?? '') ?>assets/images/figma/icon-search.svg" alt=""></button></form>
     <?php if ($user === null): ?><a class="login-pill" href="<?= e($basePath ?? '') ?>dang-nhap.php"><img src="<?= e($basePath ?? '') ?>assets/images/figma/icon-user.svg" alt="">Đăng nhập</a>

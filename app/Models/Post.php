@@ -22,7 +22,6 @@ final class Post
              INNER JOIN users u ON u.id = p.author_id
              WHERE p.status = 'published' AND (p.published_at IS NULL OR p.published_at <= NOW())
                AND c.status = 'active'
-               AND c.slug IN ('tin-khoa', 'hoc-tap', 'co-hoi', 'su-kien')
              ORDER BY p.is_featured DESC, COALESCE(p.published_at, p.created_at) DESC, p.id DESC
              LIMIT ?"
         );

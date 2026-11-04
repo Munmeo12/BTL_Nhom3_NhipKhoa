@@ -16,6 +16,23 @@ final class Category
         return $this->pdo->query('SELECT id, name FROM categories ORDER BY id ASC')->fetchAll();
     }
 
+    /** Danh mục đang hiển thị công khai, sắp theo tên. */
+    public function activeList(): array
+    {
+        return $this->pdo->query(
+            "SELECT id, slug, name, description FROM categories WHERE status = 'active' ORDER BY name ASC"
+        )->fetchAll();
+    }
+
+    public function findActiveBySlug(string $slug): ?array
+    {
+        $statement = $this->pdo->prepare(
+            "SELECT id, slug, name, description FROM categories WHERE slug = ? AND status = 'active' LIMIT 1"
+        );
+        $statement->execute([$slug]);
+        return $statement->fetch() ?: null;
+    }
+
     public function search(string $keyword = '', string $status = 'all'): array
     {
         $sql = 'SELECT c.*, COUNT(p.id) AS post_count FROM categories c LEFT JOIN posts p ON p.category_id = c.id WHERE 1=1';

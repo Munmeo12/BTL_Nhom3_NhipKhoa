@@ -9,7 +9,7 @@ $q = $keyword;
     <?php if ($isSearch): ?><form class="public-search" action="tim-kiem.php" method="get" role="search"><label for="public-query">Từ khóa tìm kiếm</label><div><input id="public-query" name="q" type="search" value="<?= e($q) ?>" placeholder="Nhập từ khóa..."><button type="submit">Tìm kiếm</button></div></form><?php endif; ?>
 </div>
 <?php if ($loadError): ?>
-<div class="public-empty" role="alert"><h2>Chưa thể tải bài viết</h2><p>Kết nối dữ liệu đang gián đoạn. Vui lòng thử lại sau.</p><a href="<?= e(BASE_URL . 'pages/' . ($category ?? 'tim-kiem') . '.php?' . http_build_query(['q' => $q, 'page' => $requestedPage])) ?>">Thử lại</a></div>
+<div class="public-empty" role="alert"><h2>Chưa thể tải bài viết</h2><p>Kết nối dữ liệu đang gián đoạn. Vui lòng thử lại sau.</p><a href="<?= e('?' . http_build_query($baseQuery + ['q' => $q, 'page' => $requestedPage])) ?>">Thử lại</a></div>
 <?php else: ?>
 <p class="public-count"><?= $data['total'] ?> bài viết<?= $q !== '' ? ' phù hợp với “' . e($q) . '”' : '' ?></p>
 <div class="public-layout<?= $isSearch || $grid ? ' public-layout-wide' : '' ?>">
@@ -28,7 +28,7 @@ $q = $keyword;
 <?php endif; ?>
 <?php if ($data['pages'] > 1): ?>
 <nav class="public-pagination" aria-label="Phân trang bài viết">
-<?php $pageUrl = static fn(int $n): string => '?' . http_build_query(['q' => $q, 'page' => $n] + (($tag ?? '') !== '' ? ['tag' => $tag] : [])); ?>
+<?php $pageUrl = static fn(int $n): string => '?' . http_build_query($baseQuery + ['q' => $q, 'page' => $n] + (($tag ?? '') !== '' ? ['tag' => $tag] : [])); ?>
 <?php if ($data['page'] > 1): ?><a href="<?= e($pageUrl($data['page'] - 1)) ?>">← Trước</a><?php endif; ?>
 <?php for ($i = max(1, $data['page'] - 2); $i <= min($data['pages'], $data['page'] + 2); $i++): ?>
 <a href="<?= e($pageUrl($i)) ?>" <?= $i === $data['page'] ? 'aria-current="page"' : '' ?>><?= $i ?></a>
@@ -40,7 +40,7 @@ $q = $keyword;
 </div>
 <?php if (!$isSearch && !$grid): ?>
 <aside class="public-sidebar"><section><h2>Danh mục</h2><nav aria-label="Danh mục bài viết">
-<?php foreach ($categories as $slug => $name): ?><a href="<?= e(BASE_URL . 'pages/' . $slug) ?>.php" <?= $slug === $category ? 'aria-current="page"' : '' ?>><?= e($name) ?></a><?php endforeach; ?>
+<?php foreach ($categories as $slug => $name): ?><a href="<?= e(publicCategoryUrl((string) $slug, BASE_URL)) ?>" <?= (string) $slug === $category ? 'aria-current="page"' : '' ?>><?= e($name) ?></a><?php endforeach; ?>
 </nav></section><section><h2>Bài mới nhất</h2>
 <?php foreach ($latest as $post): ?><a class="public-related" href="<?= e(publicDetailUrl((int) $post['id'], $context, $basePath)) ?>"><img src="<?= e(publicPostImage($post['thumbnail'], $basePath)) ?>" alt="" data-public-image><span><?= e($post['title']) ?><small><?= e(publicPostDate($post)) ?></small></span></a><?php endforeach; ?>
 <?php if (!$latest): ?><p>Chưa có bài viết.</p><?php endif; ?>

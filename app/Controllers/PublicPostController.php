@@ -5,6 +5,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Request;
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use Closure;
@@ -27,11 +28,21 @@ final class PublicPostController extends Controller
 
     public function category(Request $request, string $slug): void
     {
+        $found = null;
+        // 4 chuyên mục gốc luôn dùng được; chuyên mục khác phải có trong DB và đang hiển thị.
         if (!isset(self::CATEGORIES[$slug])) {
-            http_response_code(404);
-            exit('404 - Không tìm thấy danh mục.');
+            try {
+                $found = $slug === '' ? null : (new Category($this->pdo()))->findActiveBySlug($slug);
+            } catch (PDOException) {
+                http_response_code(503);
+                exit('Chưa thể tải danh mục. Vui lòng thử lại sau.');
+            }
+            if ($found === null) {
+                http_response_code(404);
+                exit('404 - Không tìm thấy danh mục.');
+            }
         }
-        $this->listing($request, $slug);
+        $this->listing($request, $slug, $found);
     }
 
     public function search(Request $request): void
@@ -39,7 +50,7 @@ final class PublicPostController extends Controller
         $this->listing($request, null);
     }
 
-    private function listing(Request $request, ?string $category): void
+    private function listing(Request $request, ?string $category, ?array $found = null): void
     {
         $isSearch = $category === null;
         $keyword = $isSearch ? trim((string) $request->query('q', '')) : '';
@@ -71,9 +82,19 @@ final class PublicPostController extends Controller
             'co-hoi' => 'Học bổng, thực tập, việc làm và cơ hội phát triển bản thân.',
             'su-kien' => 'Hội thảo, workshop và các hoạt động của khoa.',
         ];
+        if ($category !== null && !isset($descriptions[$category])) {
+            $description = trim((string) ($found['description'] ?? ''));
+            $descriptions[$category] = $description !== '' ? $description : 'Các bài viết thuộc chuyên mục này.';
+        }
         $pageTitle = $isSearch
             ? ($tag !== '' ? 'Thẻ: ' . ($tagName !== '' ? $tagName : $tag) : ($keyword === '' ? 'Tất cả bài viết' : 'Kết quả tìm kiếm'))
-            : self::CATEGORIES[$category];
+            : (self::CATEGORIES[$category] ?? (string) ($found['name'] ?? $category));
+        $categories = self::CATEGORIES;
+        foreach (publicExtraCategories() as $extra) {
+            $categories[$extra['slug']] = $extra['name'];
+        }
+        // Trang danh mục thêm mới dùng ?slug=..., phân trang phải giữ lại tham số này.
+        $baseQuery = ($category !== null && !isset(self::CATEGORIES[$category])) ? ['slug' => $category] : [];
         $context = [
             'from' => $category ?? 'tim-kiem',
             'q' => $keyword,
@@ -85,11 +106,11 @@ final class PublicPostController extends Controller
 
         $this->render('public.list', compact(
             'category', 'isSearch', 'keyword', 'tag', 'requestedPage', 'data', 'latest',
-            'loadError', 'descriptions', 'pageTitle', 'context'
+            'loadError', 'descriptions', 'pageTitle', 'context', 'baseQuery'
         ) + [
             'activeNav' => $category ?? '',
             'publicStyles' => true,
-            'categories' => self::CATEGORIES,
+            'categories' => $categories,
             'grid' => in_array($category, ['hoc-tap', 'su-kien'], true),
         ], 'layouts.public');
     }
