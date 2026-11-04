@@ -36,7 +36,7 @@ Không có trường chọn role. Dù người dùng sửa HTML, câu SQL vẫn 
 
 - Họ tên 2–120 ký tự.
 - Email hợp lệ, tối đa 150 ký tự và không được trùng.
-- Mật khẩu 8–72 ký tự, có ít nhất một chữ và một số.
+- - Mật khẩu 8–72 ký tự, có đủ chữ hoa, chữ thường, số và ký tự đặc biệt (ví dụ: @ # $ !).
 - Nhập lại mật khẩu phải khớp.
 - Mật khẩu chỉ lưu dưới dạng hash, không lưu chữ thường.
 
@@ -50,8 +50,8 @@ Người dùng nhập email + mật khẩu
 → kiểm tra status = active
 → đổi session ID để chống session fixation
 → lưu id, email, full_name, role vào session
-→ Admin đến dashboard; role khác về trang chủ
-```
+→ chuyển theo vai trò: Admin → admin/dashboard.php, Biên tập viên → editor/dashboard.php,
+  Tác giả → author/dashboard.php, Độc giả → index.php```
 
 Thông báo sai dùng chung “Email hoặc mật khẩu không chính xác” để người ngoài
 không đoán được email nào có trong hệ thống.
@@ -66,14 +66,13 @@ Editor: xem và duyệt/từ chối/xuất bản bài chờ duyệt
 Admin: quản lý tài khoản, role, danh mục và toàn bộ hệ thống
 ```
 
-Ẩn nút trên giao diện chỉ giúp dễ dùng, không phải bảo mật. Mỗi trang nhạy cảm
-phải gọi `requireRole([...])` ở đầu file. Ví dụ dashboard gọi
-`requireRole(['admin'])`. Người chưa đăng nhập bị chuyển tới đăng nhập; người đã
-đăng nhập nhưng sai role nhận HTTP 403.
+Ẩn nút trên giao diện chỉ giúp dễ dùng, không phải bảo mật. Mỗi action nhạy cảm gọi `$this->auth->requireRole([...])` ở đầu hàm trong controller. Ví dụ
+`AdminUserController::dashboard()` gọi `requireRole(['admin'])`. Người chưa đăng nhập bị chuyển
+tới đăng nhập; người đã đăng nhập nhưng sai role nhận HTTP 403.
 
 ## 5. Flow trang chủ
 
-Trang chủ không yêu cầu đăng nhập. PHP truy vấn tối đa 6 bài với điều kiện
+Trang chủ không yêu cầu đăng nhập. PHP truy vấn tối đa 4 bài (`Post::publishedForHome(4)`) với điều kiện
 `posts.status = 'published'` và danh mục còn hoạt động. Vì kiểm tra nằm trong
 SQL nên khách không thể đổi URL để đọc bản nháp. Nếu chưa có bài thì hiển thị
 trạng thái rỗng; nếu MySQL chưa chạy thì hiển thị hướng dẫn thay vì lộ lỗi kỹ
@@ -81,13 +80,17 @@ thuật.
 
 ## 6. Các file quan trọng
 
-- `config/database.php`: tạo một kết nối PDO dùng chung.
-- `includes/app.php`: session, encode output, CSRF và redirect.
-- `includes/auth.php`: lấy user hiện tại, bắt đăng nhập và kiểm tra role.
+- `bootstrap/app.php`: session, `BASE_URL`, autoload, `e()`, `csrfToken()`, `verifyCsrf()`, `redirect()`.
+- `config/database.php`: hàm `db()` tạo một kết nối PDO dùng chung.
+- `app/Services/AuthService.php`: lấy user hiện tại (đối chiếu lại CSDL mỗi request),
+  đăng nhập/đăng xuất, `requireRole()`, `landingPage()`.
+- `app/Controllers/AuthController.php`: `login()`, `register()`, `logout()`.
+- `app/Models/User.php`: truy vấn tài khoản (`findByEmail`, `createReader`, `sessionState`...).
+- `includes/app.php`, `includes/auth.php`: lớp tương thích cũ, bọc lại bootstrap và `AuthService`.
 - `includes/header.php`, `includes/footer.php`: giao diện chung.
-- `dang-ky.php`, `dang-nhap.php`, `dang-xuat.php`: xác thực.
-- `index.php`: trang chủ công khai.
-- `admin/dashboard.php`: ví dụ trang chỉ Admin được mở.
+- `dang-ky.php`, `dang-nhap.php`, `dang-xuat.php`: điểm vào mỏng, gọi `AuthController`.
+- `index.php`: điểm vào trang chủ, gọi `HomeController`.
+- `admin/dashboard.php`: ví dụ trang chỉ Admin được mở (qua `AdminUserController`).
 
 ## 7. Cách demo với giảng viên
 
@@ -127,3 +130,6 @@ Người dùng đăng ký → mặc định là Reader
 → lần đăng nhập tiếp theo, session nhận role Author
 → người dùng được phép vào Dashboard tác giả
 ```
+Cách thứ hai: Độc giả gửi yêu cầu tại `yeu-cau-tac-gia.php` (kèm chủ đề, lý do, link bài mẫu).
+Admin xử lý tại `admin/yeu-cau-tac-gia.php`: duyệt thì tài khoản được nâng lên Tác giả, từ chối
+thì phải ghi lý do. Mỗi người chỉ có một yêu cầu đang chờ cùng lúc.

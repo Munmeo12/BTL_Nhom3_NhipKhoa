@@ -1,7 +1,7 @@
 # ERD nhóm - Website tin tức/blog Nhịp Khoa
 
-Tài liệu này mô tả đúng cấu trúc hiện tại trong `database/schema.sql`. Hệ thống
-gồm sáu bảng và không có bảng hoặc cột riêng cho bình luận của khách.
+Tài liệu này mô tả đúng cấu trúc hiện tại trong `database/schema.sql`. Hệ thống gồm chín bảng (sáu bảng lõi và ba bảng bổ sung: `tags`, `post_tags`,
+`author_requests`) và không có bảng hoặc cột riêng cho bình luận của khách.
 
 ```mermaid
 erDiagram
@@ -13,6 +13,10 @@ erDiagram
     users o|--o{ comments : "user_id"
     users ||--o{ impact_box_items : "user_id"
     posts ||--o{ impact_box_items : "post_id"
+    posts ||--o{ post_tags : "post_id"
+    tags ||--o{ post_tags : "tag_id"
+    users ||--o{ author_requests : "user_id"
+    users o|--o{ author_requests : "reviewed_by"
 
     roles {
         TINYINT_UNSIGNED id PK
@@ -52,6 +56,8 @@ erDiagram
         ENUM status "draft | pending | published | rejected"
         TEXT editor_note "nullable"
         DATETIME published_at "nullable"
+        INT_UNSIGNED view_count "default 0"
+        TINYINT is_featured "0 | 1"
         DATETIME created_at
         DATETIME updated_at
     }
@@ -72,6 +78,31 @@ erDiagram
         VARCHAR note "nullable, maximum 500 characters"
         DATETIME created_at
     }
+        tags {
+        INT_UNSIGNED id PK
+        VARCHAR slug UK
+        VARCHAR name UK
+        DATETIME created_at
+    }
+
+    post_tags {
+        INT_UNSIGNED post_id PK, FK
+        INT_UNSIGNED tag_id PK, FK
+    }
+    author_requests {
+        INT_UNSIGNED id PK
+        INT_UNSIGNED user_id FK
+        VARCHAR contact "nullable"
+        VARCHAR topics
+        TEXT reason
+        VARCHAR sample_link "nullable"
+        ENUM status "pending | approved | rejected"
+        VARCHAR admin_note "nullable"
+        INT_UNSIGNED reviewed_by FK "nullable"
+        DATETIME reviewed_at "nullable"
+        DATETIME created_at
+        TINYINT pending_flag "generated: 1 if pending, else NULL"
+    }
 ```
 
 ## Ý nghĩa quan hệ
@@ -82,8 +113,11 @@ erDiagram
   `reviewer_id = NULL`.
 - Một danh mục có nhiều bài; mỗi bài thuộc đúng một danh mục.
 - Một bài có nhiều bình luận. Chỉ tài khoản đang đăng nhập và còn hoạt động mới
-  được tạo bình luận; bình luận mới luôn có trạng thái `pending`.
+  được tạo bình luận; bình luận mới có trạng thái `pending`, riêng bình luận của
+  Admin được `approved` ngay.
 - `impact_box_items` là bảng nối quan hệ nhiều-nhiều giữa người dùng và bài viết.
+- `post_tags` là bảng nối quan hệ nhiều-nhiều giữa bài viết và thẻ.
+- Một người dùng có thể gửi nhiều yêu cầu làm tác giả, nhưng chỉ một yêu cầu `pending` tại một thời điểm.
 
 ## Khóa duy nhất và chỉ mục
 
@@ -94,6 +128,8 @@ erDiagram
 - `posts(status, published_at)`, `posts(category_id)` và
   `comments(post_id, status)` được đánh chỉ mục cho các truy vấn công khai và
   kiểm duyệt.
+- `tags.slug`, `tags.name` là duy nhất; `UNIQUE(user_id, pending_flag)` trong
+  `author_requests` bảo đảm mỗi người chỉ có một yêu cầu đang chờ.
 
 ## Quy tắc khóa ngoại
 
@@ -107,7 +143,10 @@ erDiagram
 | `comments.user_id` | `users.id` | `SET NULL` |
 | `impact_box_items.user_id` | `users.id` | `CASCADE` |
 | `impact_box_items.post_id` | `posts.id` | `CASCADE` |
-
+| `post_tags.post_id` | `posts.id` | `CASCADE` |
+| `post_tags.tag_id` | `tags.id` | `CASCADE` |
+| `author_requests.user_id` | `users.id` | `CASCADE` |
+| `author_requests.reviewed_by` | `users.id` | `SET NULL` |
 `comments.user_id` cho phép `NULL` để giữ lại nội dung khi tài khoản bị xóa,
 không phải để hỗ trợ khách bình luận.
 
@@ -117,6 +156,7 @@ không phải để hỗ trợ khách bình luận.
 - Bình luận: tạo mới ở `pending`, sau đó Admin chuyển thành `approved` hoặc
   `hidden`; chỉ bình luận `approved` được hiển thị công khai.
 - Trang công khai chỉ đọc bài `published` thuộc danh mục `active`.
+- Yêu cầu làm tác giả: `pending` → `approved` hoặc `rejected`.
 
 ## Dữ liệu không lưu dư thừa
 

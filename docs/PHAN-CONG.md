@@ -22,14 +22,14 @@ prepared statement, `e()`, CSRF.
 
 ## Nguyễn Hải Vân - Biên tập viên
 
-- **Controller:** `EditorPostController`, `CommentController`.
-- **Model:** `Post` (`editorCounts`, `pendingForEditor`, `forEditor`, `findForReview`, `review`,
+- **Controller:** `EditorPostController` (duyệt bài, cho Biên tập viên và Admin); `CommentController`
+  (kiểm duyệt bình luận, **chỉ Admin truy cập được**, Hải Vân phụ trách giải thích code).- **Model:** `Post` (`editorCounts`, `pendingForEditor`, `forEditor`, `findForReview`, `review`,
   `unpublish`, `deleteAny`, `setFeatured`), `Comment`.
 - **View/điểm vào:** `editor/*.php`, `app/Views/editor/*`, `app/Views/admin/posts.php`,
   `admin/binhluan.php`, `admin/chi-tiet-binh-luan.php`, `admin/api/duyet-binh-luan.php`, `layouts/editor`.
 - **Cần giải thích:** vòng đời bài, `UPDATE ... WHERE status = 'pending'` chống duyệt đè,
   hẹn giờ xuất bản (`published_at`), bài nổi bật, endpoint JSON và `fetch()` duyệt bình luận.
-
+- **Lưu ý demo:** thao tác duyệt bình luận trên giao diện làm bằng tài khoản Admin.
 ## Đào Khánh Trung - Tác giả
 
 - **Controller/Service:** `AuthorPostController`, `AuthorRequestController::form`, `ImageUploadService`, `Slugger`.
@@ -44,11 +44,11 @@ prepared statement, `e()`, CSRF.
 - **Controller:** `HomeController`, `PublicPostController` (danh mục, tìm kiếm, thẻ, RSS),
   `PublicArticleController` (chi tiết, gửi bình luận), `PublicPageController`, `ImpactBoxController`.
 - **Model:** `Post` (`publishedForHome`, `publishedList`, `findPublished`, `relatedPublished`,
-  `incrementViews`), `Comment` (`approvedForPost`, `createPending`), `ImpactBox`.
+  `incrementViews`), `Comment` (`approvedForPost`, `createForRole`: bình luận của Admin được duyệt ngay, vai trò khác chờ duyệt), `ImpactBox`.
 - **View/điểm vào:** `index.php`, `bai-viet.php`, `pages/*.php`, `rss.php`, `impact-box-action.php`, `views/impact-box.php`,
   `app/Views/public/*`, `app/Views/impact/*`, `layouts/public`, `includes/header|footer|public-posts.php`.
 - **Cần giải thích:** vì sao chỉ bài `published` và đã tới giờ mới hiện, tìm kiếm có phân trang,
-  bình luận mới ở trạng thái chờ duyệt, Impact Box không lưu trùng (UNIQUE), đếm lượt xem mỗi phiên một lần.
+  bình luận của độc giả ở trạng thái chờ duyệt, Impact Box không lưu trùng (UNIQUE), đếm lượt xem mỗi phiên một lần.
 
 ## Người phụ trách 8 tình huống kiểm thử
 
@@ -59,7 +59,7 @@ prepared statement, `e()`, CSRF.
 | 3 | Biên tập duyệt thì bài hiện ở trang chủ | Hải Vân |
 | 4 | Slug trùng được xử lý | Khánh Trung |
 | 5 | Upload file không phải ảnh bị từ chối | Khánh Trung |
-| 6 | Bình luận chứa script không chạy | Vũ Học (hiển thị), Hải Vân (duyệt) |
+| 6 | Bình luận chứa script không chạy | Vũ Học (hiển thị), Hà Anh (thao tác duyệt bằng Admin), Hải Vân (giải thích endpoint) |
 | 7 | Tìm kiếm chỉ trả bài đã xuất bản | Vũ Học |
 | 8 | CSRF sai thì thao tác bị từ chối | Hà Anh |
 
