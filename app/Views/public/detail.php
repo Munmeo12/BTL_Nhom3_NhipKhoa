@@ -434,13 +434,20 @@ declare(strict_types=1);
                             aria-label="Danh mục bài viết"
                         >
 
+                           <?php
+                            $sidebarCategories = PUBLIC_CATEGORIES;
+                            foreach (publicExtraCategories() as $extra) {
+                                $sidebarCategories[$extra['slug']] = $extra['name'];
+                            }
+                            ?>
+
                             <?php foreach (
-                                PUBLIC_CATEGORIES
+                                $sidebarCategories
                                 as $slug => $name
                             ): ?>
 
                                 <a
-                                    href="pages/<?= e($slug) ?>.php"
+                                    href="<?= e(publicCategoryUrl((string) $slug)) ?>"
                                 >
                                     <?= e($name) ?>
                                 </a>

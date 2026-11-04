@@ -117,7 +117,7 @@ final class PublicArticleController extends Controller
     private function context(Request $request): array
     {
         $from = trim((string) $request->query('from', ''));
-        if (!isset(PublicPostController::CATEGORIES[$from]) && $from !== 'tim-kiem') {
+        if ($from === '' || mb_strlen($from) > 150) {
             return [];
         }
         $context = [

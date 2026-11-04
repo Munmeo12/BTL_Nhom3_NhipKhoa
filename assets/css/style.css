@@ -1284,3 +1284,38 @@ html,body { margin:0; width:100%; }
 .figma-auth-form label small.password-hint{color:#667085;font-weight:400}
 
 .article-meta .featured-badge{color:#9c6b16;background:#fff4d9;padding:1px 8px;border-radius:999px;font-weight:700}
+
+/* Menu "Chuyên mục khác": gom các chuyên mục Admin thêm mới, không làm chật thanh menu. */
+.nav-more { position:relative; display:flex; align-items:center; height:42px; }
+.nav-more > summary {
+    display:flex; align-items:center; gap:5px; height:42px; cursor:pointer; list-style:none;
+    color:#0e1625; font-size:13px; font-weight:700; white-space:nowrap; border-bottom:2px solid transparent;
+    transition:color .18s ease,border-color .18s ease;
+}
+.nav-more > summary::-webkit-details-marker { display:none; }
+.nav-more > summary::after { content:"▾"; font-size:11px; }
+.nav-more > summary:hover,
+.nav-more > summary:focus-visible,
+.nav-more[open] > summary,
+.nav-more > summary.active { color:var(--wine); border-bottom-color:var(--wine); outline:none; }
+.nav-more-menu {
+    position:absolute; top:100%; right:0; z-index:50; min-width:200px; padding:6px;
+    display:flex; flex-direction:column; gap:2px; background:#fff;
+    border:1px solid #d8dde5; border-radius:8px; box-shadow:0 12px 26px rgba(20,32,53,.14);
+}
+.desktop-nav .nav-more-menu a {
+    height:auto; padding:10px 14px; justify-content:flex-start; white-space:nowrap;
+    border-bottom:0; border-radius:6px;
+}
+.desktop-nav .nav-more-menu a:hover,
+.desktop-nav .nav-more-menu a:focus-visible,
+.desktop-nav .nav-more-menu a.active { background:#eff2f8; color:var(--wine); }
+@media(max-width:1000px) {
+    .nav-more { display:block; height:auto; width:100%; }
+    .nav-more > summary { height:40px; padding:0 13px; border:0; border-radius:6px; }
+    .nav-more > summary:hover,
+    .nav-more > summary:focus-visible,
+    .nav-more[open] > summary,
+    .nav-more > summary.active { background:#eff2f8; }
+    .nav-more-menu { position:static; min-width:0; padding:0 0 0 14px; border:0; box-shadow:none; }
+}

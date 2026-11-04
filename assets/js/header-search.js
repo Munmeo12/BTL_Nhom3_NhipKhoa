@@ -71,3 +71,14 @@
         if (window.innerWidth > 1000) closeMenu();
     });
 })();
+
+(() => {
+    const more = document.querySelector('.nav-more');
+    if (!more) return;
+    document.addEventListener('click', (event) => {
+        if (!more.contains(event.target)) more.removeAttribute('open');
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') more.removeAttribute('open');
+    });
+})();
