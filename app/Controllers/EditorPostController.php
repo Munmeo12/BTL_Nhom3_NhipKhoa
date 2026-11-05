@@ -11,6 +11,7 @@ use App\Services\AuthService;
 use Closure;
 use PDO;
 
+
 final class EditorPostController extends Controller
 {
     private const FILTERS = ['all', 'pending', 'published', 'rejected'];
