@@ -5,7 +5,7 @@ declare(strict_types=1);
 // config.local.php đã được Git bỏ qua nên mật khẩu và tên CSDL riêng không bị commit.
 return [
     'host' => 'localhost',
-    'port' => '3307',
+    'port' => '3306',
     'name' => 'nhip_khoa',
     'user' => 'root',
     'password' => '',

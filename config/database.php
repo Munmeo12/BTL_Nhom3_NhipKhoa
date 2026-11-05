@@ -21,7 +21,9 @@ function db(): PDO
     };
 
     $host = $value('DB_HOST', 'host', '127.0.0.1');
-    $port = $value('DB_PORT', 'port', '3307');
+    // SỬA DÒNG DƯỚI ĐÂY: Đổi '3307' thành '3306'
+    $port = $value('DB_PORT', 'port', '3306'); 
+    
     $name = $value('DB_NAME', 'name', 'nhip_khoa');
     $user = $value('DB_USER', 'user', 'root');
     $password = $value('DB_PASSWORD', 'password', '');
@@ -34,8 +36,6 @@ function db(): PDO
 
     $sslCa = $value('DB_SSL_CA', 'ssl_ca', '');
     if ($sslCa !== '') {
-        // PHP 8.5 đánh dấu PDO::MYSQL_ATTR_* là deprecated và đổi sang Pdo\Mysql::ATTR_*.
-        // Chỉ nhánh được chọn mới bị đánh giá nên không phát sinh cảnh báo ở cả hai bản.
         $options[defined('Pdo\Mysql::ATTR_SSL_CA')
             ? Pdo\Mysql::ATTR_SSL_CA
             : PDO::MYSQL_ATTR_SSL_CA] = $sslCa;
@@ -44,6 +44,7 @@ function db(): PDO
             : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = $value('DB_SSL_VERIFY', 'ssl_verify', '0') === '1';
     }
 
+    // Thêm các dấu ngoặc nhọn {} quanh biến để tránh lỗi cú pháp nếu chuỗi có ký tự đặc biệt
     $pdo = new PDO("mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4", $user, $password, $options);
     return $pdo;
 }
