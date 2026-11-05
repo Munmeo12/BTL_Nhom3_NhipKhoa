@@ -150,3 +150,5 @@
 .post-detail-actions{flex-wrap:wrap}
 
 .tag-form textarea{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccd1db;border-radius:8px;font:13px Inter,sans-serif;resize:vertical}
+.review-shell.with-pad{padding:34px 36px 46px}
+@media(max-width:760px){.review-shell.with-pad{padding:24px 16px}}
