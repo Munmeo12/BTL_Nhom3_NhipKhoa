@@ -40,7 +40,15 @@ $moreActive = in_array($activeNav, array_column($extraCategories, 'slug'), true)
 <?php if (!empty($publicStyles)): ?><link rel="stylesheet" href="<?= e($basePath ?? '') ?>assets/css/public-pages.css"><?php endif; ?>
 <link rel="alternate" type="application/rss+xml" title="Nhịp Khoa RSS" href="<?= e(BASE_URL) ?>rss.php">
 </head><body>
-<div class="announcement"><div class="site-shell"><span>Thông báo: Kỳ đăng ký học phần bắt đầu từ ngày 20/05.</span><a href="<?= e($basePath ?? '') ?>index.php#featured">Xem chi tiết →</a></div></div>
+<?php
+$announcementItems = [];
+try { $announcementItems = (new App\Models\Announcement(db()))->activeTexts(); } catch (Throwable) {}
+?>
+<?php if ($announcementItems): ?>
+<div class="announcement" role="region" aria-label="Thông báo"><div class="announcement-marquee"><div class="announcement-track">
+<?php for ($copy = 0; $copy < 2; $copy++): ?><div class="announcement-group"<?= $copy === 1 ? ' aria-hidden="true"' : '' ?>><?php foreach ($announcementItems as $text): ?><span class="announcement-item">Thông báo: <?= e($text) ?></span><?php endforeach; ?></div><?php endfor; ?>
+</div></div></div>
+<?php endif; ?>
 <header class="figma-header"><div class="site-shell header-inner">
     <a class="figma-logo" href="<?= e($basePath ?? '') ?>index.php"><img src="<?= e($basePath ?? '') ?>assets/images/figma/brand-logo.png" alt="Nhịp Khoa - The Faculty Post"></a>
     <nav class="desktop-nav" id="primary-navigation" aria-label="Điều hướng chính">

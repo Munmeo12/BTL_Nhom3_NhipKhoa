@@ -1319,3 +1319,12 @@ html,body { margin:0; width:100%; }
     .nav-more > summary.active { background:#eff2f8; }
     .nav-more-menu { position:static; min-width:0; padding:0 0 0 14px; border:0; box-shadow:none; }
 }
+/* Thông báo chạy vòng ở đầu trang (nội dung do admin quản lý). */
+.announcement { padding:0; overflow:hidden; font-size:13px; }
+.announcement-marquee { overflow:hidden; white-space:nowrap; padding:8px 0; }
+.announcement-track { display:inline-flex; width:max-content; animation:announcement-scroll 30s linear infinite; }
+.announcement-marquee:hover .announcement-track { animation-play-state:paused; }
+.announcement-group { display:inline-flex; flex-shrink:0; min-width:100vw; }
+.announcement-item { padding-right:80px; }
+@keyframes announcement-scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+@media (prefers-reduced-motion:reduce) { .announcement-track { animation:none; } }

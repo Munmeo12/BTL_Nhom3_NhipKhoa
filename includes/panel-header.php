@@ -56,6 +56,7 @@ $panelMenus = [
         ['categories', 'Chuyên mục', 'views/categories.php', 'folder'],
         ['tags', 'Thẻ', 'admin/the.php', 'tag'],
         ['comments', 'Bình luận', 'admin/binhluan.php', 'comment'],
+        ['announcements', 'Thông báo chạy', 'admin/thong-bao.php', 'comment'],
     ],
     'editor' => [
         ['dashboard', 'Tổng quan', 'editor/dashboard.php', 'dashboard'],

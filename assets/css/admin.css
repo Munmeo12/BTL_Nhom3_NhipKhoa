@@ -148,3 +148,5 @@
 .schedule-field input{height:36px;padding:0 8px;border:1px solid #ccd1db;border-radius:7px;font:12px Inter,sans-serif}
 .post-detail-actions .view-count{margin-right:auto;align-self:center;color:#49576e;font-size:12px}
 .post-detail-actions{flex-wrap:wrap}
+
+.tag-form textarea{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccd1db;border-radius:8px;font:13px Inter,sans-serif;resize:vertical}
