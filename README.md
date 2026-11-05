@@ -51,14 +51,14 @@ HTML, CSS, JavaScript (Fetch API), PHP 8 thuần theo mô hình MVC, MySQL (PDO 
 
 ### Nâng cấp database đã có (không chạy lại schema/seed)
 
-Chạy theo thứ tự, chỉ chạy file nào database của bạn chưa có:
+Chạy theo thứ tự, chỉ chạy file nào database chưa có:
 
 | File trong `database/migrations/` | Nội dung |
 |---|---|
-| `2026_09_06_public_categories.sql` | Thêm 4 chuyên mục công khai (Tin khoa, Học tập, Cơ hội, Sự kiện) |
-| `2026_09_06_role_content.sql` | Dữ liệu cho khu vực Tác giả và Biên tập viên |
-| `2026_09_08_add_category_description_created_at.sql` | Thêm cột mô tả, ngày tạo cho chuyên mục |
-| `2026_09_08_move_legacy_categories.sql` | Chuyển bài từ chuyên mục cũ sang chuyên mục mới |
+| `2026_10_18_public_categories.sql` | Thêm 4 chuyên mục công khai (Tin khoa, Học tập, Cơ hội, Sự kiện) |
+| `2026_10_18_role_content.sql` | Dữ liệu cho khu vực Tác giả và Biên tập viên |
+| `2026_10_20_add_category_description_created_at.sql` | Thêm cột mô tả, ngày tạo cho chuyên mục |
+| `2026_10_20_move_legacy_categories.sql` | Chuyển bài từ chuyên mục cũ sang chuyên mục mới |
 | `2026_10_23_add_author_requests.sql` | Bảng yêu cầu làm tác giả |
 | `2026_10_23_add_tags.sql` | Bảng thẻ (`tags`, `post_tags`) |
 | `2026_11_03_advanced_features.sql` | Cột `view_count`, `is_featured` (lượt xem, bài nổi bật) |

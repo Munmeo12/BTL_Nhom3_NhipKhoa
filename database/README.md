@@ -33,7 +33,7 @@ dữ liệu con chỉ thêm được khi dữ liệu ở bảng cha đã tồn t
 ## Danh mục cho các trang công khai
 
 Sau khi đã tạo database, quản trị viên chạy migration
-`migrations/2026_09_06_public_categories.sql` trên đúng database đang dùng.
+`migrations/2026_10_18_public_categories.sql` trên đúng database đang dùng.
 Script bổ sung Tin khoa, Học tập, Cơ hội, Sự kiện nếu chưa tồn tại; chạy lại
 không nhân đôi và không đổi danh mục/bài cũ. Nếu tên đã tồn tại với slug khác,
 kiểm tra thủ công trước khi đổi slug; không tự gán lại bài viết cũ.
@@ -42,7 +42,7 @@ Không chạy lại schema/seed trên database VPS có dữ liệu. Tác giả c
 mới khi viết bài; chỉ bài đã xuất bản trong danh mục đang hoạt động mới xuất hiện.
 
 Database cũ còn các danh mục `cong-nghe`, `giao-duc`, `doi-song` chạy migration
-`migrations/2026_09_08_move_legacy_categories.sql` một lần. Script chuyển bài sang
+`migrations/2026_10_20_move_legacy_categories.sql` một lần. Script chuyển bài sang
 Tin khoa, Học tập, Cơ hội rồi chỉ xóa danh mục cũ khi không còn bài tham chiếu;
 ID bài, bình luận và các mục trong Impact Box được giữ nguyên.
 

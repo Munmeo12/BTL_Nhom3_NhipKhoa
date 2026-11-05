@@ -12,7 +12,7 @@ if ($existing->fetchColumn()) throw new RuntimeException('Refusing to replace an
 $schema = file_get_contents(__DIR__ . '/../database/schema.sql');
 $schema = str_replace(['CREATE DATABASE IF NOT EXISTS nhip_khoa', 'USE nhip_khoa;'], ['CREATE DATABASE ' . $name, 'USE ' . $name . ';'], $schema);
 $pdo->exec($schema);
-$migration = file_get_contents(__DIR__ . '/../database/migrations/2026_09_06_public_categories.sql');
+$migration = file_get_contents(__DIR__ . '/../database/migrations/2026_10_18_public_categories.sql');
 $pdo->exec($migration);
 $pdo->exec($migration);
 if ((int) $pdo->query('SELECT COUNT(*) FROM categories')->fetchColumn() !== 4) throw new RuntimeException('Migration not idempotent.');
