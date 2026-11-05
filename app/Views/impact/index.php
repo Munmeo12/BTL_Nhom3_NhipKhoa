@@ -731,7 +731,7 @@ declare(strict_types=1);
 
 
             <a
-                href="<?= e($basePath ?? '') ?>index.php"
+                href="<?= e(BASE_URL) ?>index.php"
                 class="explore-button"
             >
                 Khám phá thêm bài viết
@@ -1763,6 +1763,3 @@ if (
 }
 
 </script>
-
-
-
