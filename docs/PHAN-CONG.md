@@ -3,7 +3,7 @@
 Mỗi thành viên phụ trách một vai trò. Khi báo cáo, mỗi người giải thích được ít nhất một luồng
 **route → controller → model → view** trong phần của mình (tiêu chí của đề).
 
-## Phần chung cả nhóm phải hiểu
+## Phần chung cả nhóm 
 
 Điểm vào mỏng (`*.php`) → `bootstrap/app.php` → Controller (`requireRole`, `verifyCsrf`) → Model (SQL) →
 `View::render` trong layout. Vòng đời bài: `draft → pending → published | rejected`. Ba lớp bảo vệ:
