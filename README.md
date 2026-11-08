@@ -6,7 +6,7 @@ biên tập viên duyệt bài, khách đọc và bình luận, quản trị vi�
 ## Nhóm thực hiện: nhóm 3
 
 | Họ và tên | MSSV | Vai trò trong nhóm | Vai trò hệ thống phụ trách |
-|---|---|---|
+|---|---|---|---|
 | Trần Thị Hà Anh | 224001713 | Nhóm trưởng | **Admin** + nền tảng (đăng nhập, phân quyền, tài khoản, chuyên mục, thẻ) |
 | Nguyễn Hải Vân | 224001759 | Thành viên | **Biên tập viên** (duyệt bài, kiểm duyệt bình luận) |
 | Đào Khánh Trung | 224001757 | Thành viên | **Tác giả** (viết bài, upload ảnh, slug, yêu cầu làm tác giả) |
