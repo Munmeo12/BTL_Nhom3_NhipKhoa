@@ -46,6 +46,10 @@ final class AdminUserController extends Controller
                     if($target['status']!=='active')throw new RuntimeException('Hãy mở khóa tài khoản trước khi đổi vai trò.');
                     if($target['role']===$role)throw new RuntimeException('Tài khoản đã có vai trò này.');
                     $model->changeRole($id,$role);$_SESSION['admin_notice']='Đã đổi vai trò của '.$target['full_name'].'.';
+                    $names=['reader'=>'Độc giả','author'=>'Tác giả','editor'=>'Biên tập viên'];
+                    $message='Quản trị viên đã đổi vai trò của bạn từ '.($names[$target['role']]??$target['role']).' thành '.$names[$role].'.';
+                    if($role==='reader'&&$target['role']!=='reader')$message.=' Bạn có thể gửi yêu cầu làm tác giả mới nếu muốn viết bài.';
+                    try{(new \App\Models\UserNotification($this->pdo()))->add($id,$message);}catch(Throwable){}
                 }
                 elseif($action==='toggle_status'){$next=$target['status']==='active'?'locked':'active';$model->changeStatus($id,$next);$_SESSION['admin_notice']=$next==='locked'?'Đã khóa tài khoản.':'Đã mở khóa tài khoản.';}
                 else throw new RuntimeException('Thao tác không hợp lệ.');

@@ -2,7 +2,7 @@
 
 ## Các file
 
-- [`schema.sql`](schema.sql): tạo database `nhip_khoa`: 6 bảng chính và 3 bảng bổ sung.
+- [`schema.sql`](schema.sql): tạo database `nhip_khoa`: 6 bảng chính và 5 bảng bổ sung.
 - [`seed.sql`](seed.sql): thêm vai trò, thành viên, danh mục, bài viết và dữ liệu thử.
 - [`erd.md`](erd.md): ERD của nhóm viết bằng Mermaid.
 
@@ -19,6 +19,8 @@
 | `author_requests` | Yêu cầu xin nâng quyền Độc giả lên Tác giả |
 | `tags` | Thẻ bài viết |
 | `post_tags` | Quan hệ nhiều-nhiều giữa bài viết và thẻ |
+| `announcements` | Thông báo chạy ở đầu trang do Admin quản lý |
+| `user_notifications` | Thông báo một lần gửi tới từng người dùng (đổi vai trò, duyệt/từ chối yêu cầu làm tác giả) |
 
 ## Thứ tự chạy
 
@@ -54,3 +56,11 @@ cần chép ảnh tương ứng hoặc thiết lập kho ảnh chung ở đợt 
 Với database đã có sẵn, chạy một lần `migrations/2026_11_03_advanced_features.sql`
 (thêm `posts.view_count`, `posts.is_featured`). Database tạo mới từ `schema.sql` đã có sẵn hai cột này.
 Lịch xuất bản dùng cột `published_at`: bài `published` nhưng `published_at` còn ở tương lai thì chưa hiển thị cho khách.
+
+## Ảnh đại diện và thông báo người dùng
+
+- `users.avatar` (VARCHAR 255, cho phép NULL) lưu tên file ảnh trong `assets/uploads/avatars/`. Database tạo mới từ
+  `schema.sql` đã có cột này; database cũ chạy một lần `migrations/2026_11_07_user_avatar.sql`.
+- Bảng `user_notifications` lưu thông báo một lần cho từng người dùng (đổi vai trò, duyệt/từ chối yêu cầu làm tác giả).
+  Database tạo mới đã có sẵn bảng; database cũ chạy một lần `migrations/2026_11_07_user_notifications.sql`.
+  Nếu chưa có bảng này, chức năng chính vẫn chạy nhưng người dùng không nhận được thông báo.

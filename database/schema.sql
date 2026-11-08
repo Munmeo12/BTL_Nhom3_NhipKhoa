@@ -16,6 +16,7 @@ CREATE TABLE users (
     email VARCHAR(150) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(120) NOT NULL,
+    avatar VARCHAR(255) NULL,
     status ENUM('active', 'locked') NOT NULL DEFAULT 'active',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_users_role
@@ -158,3 +159,16 @@ CREATE TABLE IF NOT EXISTS author_requests (
 ) ENGINE=InnoDB;
 
 CREATE INDEX idx_author_requests_status ON author_requests(status, created_at);
+
+CREATE TABLE IF NOT EXISTS user_notifications (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    message VARCHAR(600) NOT NULL,
+    read_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_user_notifications_unread (user_id, read_at),
+    CONSTRAINT fk_user_notifications_user
+        FOREIGN KEY (user_id) REFERENCES users(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+) ENGINE=InnoDB;

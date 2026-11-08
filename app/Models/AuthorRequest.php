@@ -93,7 +93,7 @@ final class AuthorRequest
         $statement = $this->pdo->prepare(
             'SELECT r.id, r.user_id, r.contact, r.topics, r.reason, r.sample_link, r.status,
                     r.admin_note, r.reviewed_at, r.created_at,
-                    u.full_name, u.email, u.status AS user_status, ro.code AS role,
+                    u.full_name, u.avatar, u.email, u.status AS user_status, ro.code AS role,
                     rv.full_name AS reviewer_name
              FROM author_requests r
              INNER JOIN users u ON u.id = r.user_id
@@ -144,6 +144,14 @@ final class AuthorRequest
             $this->pdo->rollBack();
             throw $exception;
         }
+    }
+
+    public function userIdOf(int $requestId): ?int
+    {
+        $statement = $this->pdo->prepare('SELECT user_id FROM author_requests WHERE id = ?');
+        $statement->execute([$requestId]);
+        $id = $statement->fetchColumn();
+        return $id === false ? null : (int) $id;
     }
 
     public function reject(int $requestId, int $adminId, string $note): void

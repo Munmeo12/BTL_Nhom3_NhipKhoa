@@ -48,7 +48,7 @@
             <div class="post-information">
                 <span>
                     <i class="fa-regular fa-user"></i>
-                    <?= htmlspecialchars($post['author_name'] ?? 'Tác giả') ?>
+                    <?= avatarTag((string) ($post['author_name'] ?? 'Tác giả'), $post['author_avatar'] ?? null, 'xs') ?><?= htmlspecialchars($post['author_name'] ?? 'Tác giả') ?>
                 </span>
 
                 <span>

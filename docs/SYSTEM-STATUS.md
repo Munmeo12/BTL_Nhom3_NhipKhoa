@@ -32,6 +32,9 @@
 - Gỡ bài và xóa bài (Admin), hẹn giờ xuất bản, bài nổi bật, lượt xem, RSS.
 - Mật khẩu đăng ký bắt buộc đủ chữ hoa, chữ thường, số, ký tự đặc biệt; nút hiện/ẩn mật khẩu.
 - Khóa tài khoản hoặc đổi vai trò có hiệu lực ngay (đối chiếu CSDL mỗi request).
+- Trang cá nhân (`trang-ca-nhan.php`): đổi tên, đổi mật khẩu, đổi/xóa ảnh đại diện cho Độc giả, Tác giả, Biên tập viên; ảnh hiện ở bình luận, bài viết và các trang quản lý.
+- Thông báo cho người dùng khi đổi vai trò hoặc duyệt/từ chối yêu cầu làm tác giả; yêu cầu đã duyệt nhưng vai trò bị hạ về Độc giả hiện "Đã thu hồi".
+- Sắp xếp danh sách bài (Mới nhất / Cũ nhất) và thời gian đọc ước tính ở trang chủ.
 
 ## Còn là trang "Đang phát triển"
 
@@ -48,4 +51,6 @@ Sau khi merge chức năng thật, thay liên kết chờ bằng URL tương ứ
 - Kiểm tra khóa tài khoản đang đăng nhập và đăng nhập lại.
 - Kiểm tra tìm kiếm, phân trang, trạng thái rỗng và bài không tồn tại.
 - Tìm toàn dự án để bảo đảm không còn `href="#"` ngoài nội dung có chủ đích.
+- Chạy `2026_11_07_user_avatar.sql` và `2026_11_07_user_notifications.sql` trên database đang dùng (nếu không tạo mới từ `schema.sql`).
+- Thử trang cá nhân bằng Độc giả, Tác giả, Biên tập viên (đổi tên, mật khẩu, ảnh) và xác nhận Admin bị chuyển về dashboard.
 - Kiểm tra desktop, tablet và mobile.

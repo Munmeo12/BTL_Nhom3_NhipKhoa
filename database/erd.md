@@ -1,7 +1,7 @@
 # ERD nhóm - Website tin tức/blog Nhịp Khoa
 
-Tài liệu này mô tả đúng cấu trúc hiện tại trong `database/schema.sql`. Hệ thống gồm chín bảng (sáu bảng lõi và ba bảng bổ sung: `tags`, `post_tags`,
-`author_requests`) và không có bảng hoặc cột riêng cho bình luận của khách.
+Tài liệu này mô tả đúng cấu trúc hiện tại trong `database/schema.sql`. Hệ thống gồm mười một bảng (sáu bảng lõi và năm bảng bổ sung: `tags`, `post_tags`,
+`author_requests`, `announcements`, `user_notifications`) và không có bảng hoặc cột riêng cho bình luận của khách.
 
 ```mermaid
 erDiagram
@@ -17,6 +17,7 @@ erDiagram
     tags ||--o{ post_tags : "tag_id"
     users ||--o{ author_requests : "user_id"
     users o|--o{ author_requests : "reviewed_by"
+    users ||--o{ user_notifications : "user_id"
 
     roles {
         TINYINT_UNSIGNED id PK
@@ -30,6 +31,7 @@ erDiagram
         VARCHAR email UK
         VARCHAR password_hash
         VARCHAR full_name
+        VARCHAR avatar "nullable, tên file ảnh đại diện"
         ENUM status "active | locked"
         DATETIME created_at
     }
@@ -103,6 +105,21 @@ erDiagram
         DATETIME created_at
         TINYINT pending_flag "generated: 1 if pending, else NULL"
     }
+
+    announcements {
+        INT_UNSIGNED id PK
+        VARCHAR content
+        TINYINT is_active "0 | 1"
+        DATETIME created_at
+    }
+
+    user_notifications {
+        INT_UNSIGNED id PK
+        INT_UNSIGNED user_id FK
+        VARCHAR message
+        DATETIME read_at "nullable, NULL = chưa đọc"
+        DATETIME created_at
+    }
 ```
 
 ## Ý nghĩa quan hệ
@@ -118,6 +135,7 @@ erDiagram
 - `impact_box_items` là bảng nối quan hệ nhiều-nhiều giữa người dùng và bài viết.
 - `post_tags` là bảng nối quan hệ nhiều-nhiều giữa bài viết và thẻ.
 - Một người dùng có thể gửi nhiều yêu cầu làm tác giả, nhưng chỉ một yêu cầu `pending` tại một thời điểm.
+- Một người dùng có nhiều thông báo (`user_notifications`); thông báo chưa đọc có `read_at = NULL` và chỉ hiện một lần.
 
 ## Khóa duy nhất và chỉ mục
 
@@ -147,6 +165,7 @@ erDiagram
 | `post_tags.tag_id` | `tags.id` | `CASCADE` |
 | `author_requests.user_id` | `users.id` | `CASCADE` |
 | `author_requests.reviewed_by` | `users.id` | `SET NULL` |
+| `user_notifications.user_id` | `users.id` | `CASCADE` |
 `comments.user_id` cho phép `NULL` để giữ lại nội dung khi tài khoản bị xóa,
 không phải để hỗ trợ khách bình luận.
 
@@ -156,7 +175,9 @@ không phải để hỗ trợ khách bình luận.
 - Bình luận: tạo mới ở `pending`, sau đó Admin chuyển thành `approved` hoặc
   `hidden`; chỉ bình luận `approved` được hiển thị công khai.
 - Trang công khai chỉ đọc bài `published` thuộc danh mục `active`.
-- Yêu cầu làm tác giả: `pending` → `approved` hoặc `rejected`.
+- Yêu cầu làm tác giả: `pending` → `approved` hoặc `rejected`. Yêu cầu `approved` mà người dùng hiện là Độc giả được hiển thị là
+  "Đã thu hồi" (tính từ vai trò hiện tại, không lưu thêm trạng thái).
+- Thông báo người dùng: tạo mới với `read_at = NULL`, hiện ở lần tải trang kế tiếp rồi được đánh dấu đã đọc.
 
 ## Dữ liệu không lưu dư thừa
 

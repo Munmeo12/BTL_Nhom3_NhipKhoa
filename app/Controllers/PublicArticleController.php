@@ -7,6 +7,7 @@ use App\Core\Controller;
 use App\Core\Request;
 use App\Core\Response;
 use App\Models\Comment;
+use App\Models\ImpactBox;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
@@ -34,6 +35,7 @@ final class PublicArticleController extends Controller
         $related = [];
         $comments = [];
         $tags = [];
+        $isSaved = false;
         $loadError = false;
         $commentError = '';
         $commentContent = '';
@@ -56,6 +58,10 @@ final class PublicArticleController extends Controller
                     $comments = (new Comment($pdo))->approvedForPost($postId);
                     $tags = (new Tag($pdo))->forPost($postId);
                     $related = $posts->relatedPublished((int) $post['category_id'], $postId);
+                    // Bài đã nằm trong Impact Box của người đang đăng nhập thì nút hiện "Đã lưu".
+                    if ($currentUser !== null) {
+                        $isSaved = (new ImpactBox($pdo))->exists((int) $currentUser['id'], $postId);
+                    }
                 }
             } catch (PDOException) {
                 $loadError = true;
@@ -106,7 +112,7 @@ final class PublicArticleController extends Controller
 
         $this->render('public.detail', compact(
             'postId', 'post', 'related', 'tags', 'comments', 'loadError', 'commentError',
-            'commentSuccess', 'commentContent', 'context', 'currentUser'
+            'commentSuccess', 'commentContent', 'context', 'currentUser', 'isSaved'
         ) + [
             'pageTitle' => $loadError ? 'Chưa thể tải bài viết' : ($post['title'] ?? 'Không tìm thấy bài viết'),
             'activeNav' => $post['category_slug'] ?? '',

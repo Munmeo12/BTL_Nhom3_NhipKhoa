@@ -47,6 +47,24 @@ final class ImpactBox
         return $this->find($userId, $postId) !== null;
     }
 
+    /** Trong các bài $postIds, trả về id của những bài người dùng đã lưu vào Impact Box. */
+    public function savedPostIds(int $userId, array $postIds): array
+    {
+        $postIds = array_values(array_unique(array_filter(
+            array_map('intval', $postIds),
+            static fn(int $id): bool => $id > 0
+        )));
+        if ($postIds === []) {
+            return [];
+        }
+        $marks = implode(',', array_fill(0, count($postIds), '?'));
+        $statement = $this->pdo->prepare(
+            "SELECT post_id FROM impact_box_items WHERE user_id = ? AND post_id IN ($marks)"
+        );
+        $statement->execute([$userId, ...$postIds]);
+        return array_map('intval', $statement->fetchAll(PDO::FETCH_COLUMN));
+    }
+
     public function canSavePost(int $postId): bool
     {
         $statement = $this->pdo->prepare(

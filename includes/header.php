@@ -19,7 +19,7 @@ $basePath = BASE_URL;
 
 $pageTitle = $pageTitle ?? 'Nhịp Khoa';
 
-$user = $_SESSION['user'] ?? null;
+$user = currentUser() ?? ($_SESSION['user'] ?? null);
 
 $activeNav = $activeNav ?? (
     basename($_SERVER['SCRIPT_NAME'] ?? '') === 'index.php'
@@ -38,6 +38,8 @@ $moreActive = in_array($activeNav, array_column($extraCategories, 'slug'), true)
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" data-site-css href="<?= e($basePath ?? '') ?>assets/css/style.css">
 <?php if (!empty($publicStyles)): ?><link rel="stylesheet" href="<?= e($basePath ?? '') ?>assets/css/public-pages.css"><?php endif; ?>
+<link rel="stylesheet" href="<?= e(BASE_URL) ?>assets/css/avatar.css">
+<?php if (!empty($pageCss)): ?><link rel="stylesheet" href="<?= e(BASE_URL) ?>assets/css/<?= e($pageCss) ?>"><?php endif; ?>
 <link rel="alternate" type="application/rss+xml" title="Nhịp Khoa RSS" href="<?= e(BASE_URL) ?>rss.php">
 </head><body>
 <?php
@@ -56,7 +58,8 @@ try { $announcementItems = (new App\Models\Announcement(db()))->activeTexts(); }
     </nav>
     <div class="header-actions"><form class="expanding-search" role="search" method="get" action="<?= e($basePath ?? '') ?>pages/tim-kiem.php"><input class="search-input" type="search" name="q" placeholder="Tìm kiếm bài viết..." aria-label="Nhập từ khóa tìm kiếm" autocomplete="off"><button class="search-circle" type="submit" aria-label="Mở tìm kiếm" aria-expanded="false"><img src="<?= e($basePath ?? '') ?>assets/images/figma/icon-search.svg" alt=""></button></form>
     <?php if ($user === null): ?><a class="login-pill" href="<?= e($basePath ?? '') ?>dang-nhap.php"><img src="<?= e($basePath ?? '') ?>assets/images/figma/icon-user.svg" alt="">Đăng nhập</a>
-    <?php else: ?><span class="welcome">Chào, <?= e($user['full_name']) ?></span><?php if (in_array(($user['role'] ?? ''), ['admin','editor','author'], true)): ?><a href="<?= e($basePath ?? '') ?><?= e(roleLandingPage((string) $user['role'])) ?>"><?= ($user['role'] ?? '') === 'admin' ? 'Quản trị' : 'Khu vực của tôi' ?></a><?php endif; ?><?php if (($user['role'] ?? '') === 'reader'): ?><a href="<?= e($basePath ?? '') ?>yeu-cau-tac-gia.php" class="become-author">Làm tác giả</a><?php endif; ?><form method="post" action="<?= e($basePath ?? '') ?>dang-xuat.php" class="inline-form"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><button class="link-button logout-button" type="submit"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M14 3h4a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-4"/></svg><span>Đăng xuất</span></button></form><?php endif; ?>
+    <?php else: ?><?php if (($user['role'] ?? '') !== 'admin'): ?><a class="header-profile" href="<?= e(BASE_URL) ?>trang-ca-nhan.php" title="Trang cá nhân"><?= avatarTag((string) $user['full_name'], $user['avatar'] ?? null, 'sm') ?><span class="welcome">Chào, <?= e($user['full_name']) ?></span></a><?php else: ?><span class="welcome">Chào, <?= e($user['full_name']) ?></span><?php endif; ?><?php if (in_array(($user['role'] ?? ''), ['admin','editor','author'], true)): ?><a href="<?= e($basePath ?? '') ?><?= e(roleLandingPage((string) $user['role'])) ?>"><?= ($user['role'] ?? '') === 'admin' ? 'Quản trị' : 'Khu vực của tôi' ?></a><?php endif; ?><?php if (($user['role'] ?? '') === 'reader'): ?><a href="<?= e($basePath ?? '') ?>yeu-cau-tac-gia.php" class="become-author">Làm tác giả</a><?php endif; ?><form method="post" action="<?= e($basePath ?? '') ?>dang-xuat.php" class="inline-form"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><button class="link-button logout-button" type="submit"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M14 3h4a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-4"/></svg><span>Đăng xuất</span></button></form><?php endif; ?>
     </div><button class="mobile-menu" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="primary-navigation"><span></span><span></span><span></span></button>
 </div></header>
 <main>
+<?= notificationBanner() ?>

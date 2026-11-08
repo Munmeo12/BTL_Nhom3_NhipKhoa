@@ -23,6 +23,8 @@ final class HomeController extends Controller
         $postsLoadError = false;
         $impactItems = [];
         $impactLoadError = false;
+        $savedIds = [];
+        $userId = (int) ($_SESSION['user']['id'] ?? 0);
 
         try {
             $pdo = $this->pdo();
@@ -31,7 +33,16 @@ final class HomeController extends Controller
             $postsLoadError = true;
         }
 
-        $userId = (int) ($_SESSION['user']['id'] ?? 0);
+        // Những bài đang hiện ở trang chủ mà người dùng đã lưu: nút ♡ đổi thành ♥.
+        if ($userId > 0 && $posts) {
+            try {
+                $pdo ??= $this->pdo();
+                $savedIds = (new ImpactBox($pdo))->savedPostIds($userId, array_column($posts, 'id'));
+            } catch (PDOException) {
+                $savedIds = [];
+            }
+        }
+
         if ($userId > 0) {
             try {
                 $pdo ??= $this->pdo();
@@ -45,7 +56,8 @@ final class HomeController extends Controller
             'posts',
             'postsLoadError',
             'impactItems',
-            'impactLoadError'
+            'impactLoadError',
+            'savedIds'
         ) + [
             'pageTitle' => 'Trang chủ',
             'activeNav' => 'home',

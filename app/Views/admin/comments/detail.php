@@ -393,7 +393,7 @@
                     </span>
 
                     <span class="info-value">
-                        <?= htmlspecialchars(
+                        <?= avatarTag((string) ($comment['user_name'] ?? ''), $comment['user_avatar'] ?? null, 'xs') ?><?= htmlspecialchars(
                             $comment['user_name'] ?? '',
                             ENT_QUOTES,
                             'UTF-8'

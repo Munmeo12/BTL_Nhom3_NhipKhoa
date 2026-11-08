@@ -17,7 +17,7 @@ $isAdmin = (bool) ($isAdmin ?? false);
 <?php foreach ($posts as $post): ?><tr<?= $viewId === (int) $post['id'] ? ' class="row-selected"' : '' ?>>
 <td><?= 'BV' . str_pad((string) $post['id'], 3, '0', STR_PAD_LEFT) ?></td>
 <td><div class="post-cell"><?php if ($post['thumbnail']): ?><img src="<?= e(BASE_URL) ?>assets/uploads/<?= e($post['thumbnail']) ?>" alt=""><?php else: ?><span class="post-thumb-empty">▤</span><?php endif; ?><b><?= e($post['title']) ?></b></div></td>
-<td><?= e($post['author_name']) ?></td>
+<td><?= avatarTag((string) $post['author_name'], $post['author_avatar'] ?? null, 'xs') ?><?= e($post['author_name']) ?></td>
 <td><?= e($post['category_name'] ?? 'Chưa phân loại') ?></td>
 <td><?= e(date('d/m/Y', strtotime($post['created_at']))) ?></td>
 <td><span class="status-chip post-<?= e($post['status']) ?>"><?= !empty($post['is_scheduled']) ? 'Hẹn đăng' : e($statusLabels[$post['status']] ?? $post['status']) ?></span><?= !empty($post['is_featured']) ? ' <span title="Bài nổi bật" style="color:#9c6b16">★</span>' : '' ?></td>
@@ -34,7 +34,7 @@ $isAdmin = (bool) ($isAdmin ?? false);
 <div class="post-detail-body">
 <h3><?= e($selectedPost['title']) ?></h3>
 <dl class="post-meta">
-<div><dt>Tác giả</dt><dd><?= e($selectedPost['author_name']) ?></dd></div>
+<div><dt>Tác giả</dt><dd><?= avatarTag((string) $selectedPost['author_name'], $selectedPost['author_avatar'] ?? null, 'xs') ?><?= e($selectedPost['author_name']) ?></dd></div>
 <div><dt>Chuyên mục</dt><dd><?= e($selectedPost['category_name'] ?? 'Chưa phân loại') ?></dd></div>
 <div><dt>Ngày gửi</dt><dd><?= e(date('d/m/Y', strtotime($selectedPost['created_at']))) ?></dd></div>
 <div><dt>Trạng thái</dt><dd><span class="status-chip post-<?= e($selectedPost['status']) ?>"><?= !empty($selectedPost['is_scheduled']) ? 'Hẹn đăng' : e($statusLabels[$selectedPost['status']] ?? $selectedPost['status']) ?></span><?= !empty($selectedPost['is_featured']) ? ' <span style="color:#9c6b16">★ Nổi bật</span>' : '' ?></dd></div>

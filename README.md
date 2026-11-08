@@ -16,14 +16,19 @@ Phạm vi file của từng người: [`docs/PHAN-CONG.md`](docs/PHAN-CONG.md).
 
 ## Chức năng đã hoàn thành
 
-- **Khách:** xem trang chủ, danh mục, chi tiết bài, tìm kiếm (theo nội dung, tác giả, chuyên mục, thẻ), lọc theo thẻ, RSS.
+- **Khách:** xem trang chủ (mỗi bài có thời gian đọc ước tính), danh mục, chi tiết bài, tìm kiếm (theo nội dung, tác giả, chuyên mục, thẻ),
+  sắp xếp danh sách bài theo Mới nhất / Cũ nhất, lọc theo thẻ, RSS.
 - **Độc giả:** đăng ký (mật khẩu có chữ hoa, chữ thường, số, ký tự đặc biệt), đăng nhập, bình luận (chờ duyệt),
-  lưu bài vào Impact Box kèm ghi chú, gửi yêu cầu làm tác giả.
-- **Tác giả:** tạo, sửa, xóa bài của mình, lưu nháp hoặc gửi duyệt, chọn thẻ, upload ảnh đại diện
+  lưu bài vào Impact Box kèm ghi chú, gửi yêu cầu làm tác giả, nhận thông báo khi vai trò thay đổi.
+- **Tác giả:** tạo, sửa, xóa bài của mình, lưu nháp hoặc gửi duyệt, chọn thẻ, upload ảnh bìa bài viết
   (JPG/PNG/WEBP, tối đa 5MB, kiểm tra MIME thật), xem lý do khi bị từ chối hoặc bị gỡ.
 - **Biên tập viên:** duyệt, từ chối (bắt buộc ghi lý do), hẹn giờ xuất bản, đánh dấu bài nổi bật.
 - **Admin:** quản lý tài khoản (đổi vai trò, khóa/mở khóa), chuyên mục, thẻ, yêu cầu làm tác giả; gỡ hoặc xóa bài;
   kiểm duyệt bình luận (duyệt/ẩn/hiện/xóa) bằng endpoint JSON gọi qua `fetch()`.
+- **Trang cá nhân** (`trang-ca-nhan.php`, Độc giả/Tác giả/Biên tập viên, không dành cho Admin): đổi tên hiển thị, đổi mật khẩu (cần mật khẩu hiện tại), đổi/xóa ảnh đại diện (JPG/PNG/WEBP, tối đa 2MB). Ảnh hiện ở thanh trên, bình luận, bài viết và các trang quản lý của Admin/Biên tập viên.
+- **Thông báo cho người dùng:** khi Admin đổi vai trò, hoặc duyệt/từ chối yêu cầu làm tác giả (kèm lý do), người đó thấy khung thông báo ở
+  lần tải trang kế tiếp (chỉ hiện một lần, có nút đóng). Người từng được duyệt làm tác giả nhưng đã bị hạ về Độc giả thì yêu cầu hiện
+  "Đã thu hồi" và họ có thể gửi yêu cầu mới.
 - **Nâng cao:** RSS, lượt xem, bài nổi bật, lịch xuất bản. Chưa làm: trình soạn thảo rich text.
 
 Luồng bài viết: `nháp → chờ duyệt → đã đăng` hoặc `từ chối` (kèm lý do). Chỉ bài đã đăng và đã tới giờ xuất bản mới hiện với khách.
@@ -63,6 +68,9 @@ Chạy theo thứ tự, chỉ chạy file nào database chưa có:
 | `2026_10_23_add_tags.sql` | Bảng thẻ (`tags`, `post_tags`) |
 | `2026_11_03_advanced_features.sql` | Cột `view_count`, `is_featured` (lượt xem, bài nổi bật) |
 | `2026_11_03_tags_demo.sql` | Thẻ mẫu (tùy chọn) |
+| `2026_11_06_announcements.sql` | Bảng `announcements` (thông báo chạy ở đầu trang do Admin quản lý) |
+| `2026_11_07_user_avatar.sql` | Cột `users.avatar` (ảnh đại diện) cho trang cá nhân |
+| `2026_11_07_user_notifications.sql` | Bảng `user_notifications` (thông báo đổi vai trò, duyệt/từ chối yêu cầu tác giả) |
 
 Biến môi trường `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_SSL_CA`, `DB_SSL_VERIFY`
 (nếu có) được ưu tiên hơn `config.local.php`.
@@ -92,14 +100,14 @@ Toàn bộ logic nằm trong `app/` (MVC). Các file `.php` ở ngoài chỉ là
 
 ```text
 BTL_NhipKhoa/
-├── index.php, bai-viet.php, dang-nhap.php, dang-ky.php, rss.php, ...   ← điểm vào công khai
+├── index.php, bai-viet.php, dang-nhap.php, dang-ky.php, trang-ca-nhan.php, rss.php, ...   ← điểm vào công khai
 ├── admin/ author/ editor/ pages/ views/                                ← điểm vào theo khu vực
 ├── bootstrap/app.php     session, BASE_URL, autoload, e()/csrfToken()/verifyCsrf()
 ├── app/
 │   ├── Core/             Controller, Request, Response, View
-│   ├── Controllers/      Auth, AdminUser, Category, AdminTag, AuthorPost, EditorPost,
-│   │                     Comment, AuthorRequest, Home, PublicPost, PublicArticle, PublicPage, ImpactBox
-│   ├── Models/           User, Post, Category, Tag, Comment, ImpactBox, AuthorRequest
+│   ├── Controllers/      Auth, AdminUser, AdminAnnouncement, Category, AdminTag, AuthorPost, EditorPost,
+│   │                     Comment, AuthorRequest, Home, PublicPost, PublicArticle, PublicPage, ImpactBox, Profile
+│   ├── Models/           User, Post, Category, Tag, Comment, ImpactBox, AuthorRequest, Announcement, UserNotification
 │   ├── Services/         AuthService, ImageUploadService, Slugger, CategoryValidator
 │   └── Views/            layouts/ (admin, auth, author, editor, public) và giao diện từng khu vực
 ├── includes/             khung dùng chung (xem includes/README.md)
@@ -139,7 +147,8 @@ Thêm chức năng mới: viết Model trong `app/Models`, Controller trong `app
 - Mọi truy vấn dùng PDO prepared statement.
 - Phân quyền kiểm tra ở server bằng `requireRole([...])`. Khóa tài khoản hoặc đổi vai trò có hiệu lực ngay
   (`AuthService::user()` đối chiếu lại CSDL ở mỗi request).
-- Upload ảnh kiểm tra MIME thật, giới hạn 5MB, đặt tên ngẫu nhiên.
+- Upload ảnh kiểm tra MIME thật, giới hạn 5MB (ảnh bìa bài viết) hoặc 2MB (ảnh đại diện người dùng), đặt tên ngẫu nhiên; ảnh đại diện cũ bị xóa khi đổi.
+- Đổi mật khẩu ở trang cá nhân bắt buộc nhập đúng mật khẩu hiện tại và đổi session id sau khi đổi.
 - Slug bài viết và thẻ sinh từ tiêu đề, trùng thì thêm hậu tố `-2`, `-3`.
 - Kết nối SSL tới MySQL VPS mặc định không xác minh chứng chỉ máy chủ; đặt `ssl_verify` = `'1'` nếu chứng chỉ khớp host.
 
@@ -154,6 +163,7 @@ Script tự động và cách chạy: [`tests/README.md`](tests/README.md).
 - **Gỡ bài** (Admin) đưa bài về trạng thái `rejected` và ghi `[Gỡ bài]` vào lý do, vì đề không yêu cầu thêm trạng thái mới.
 - Bài hẹn giờ chưa tới giờ hiển thị là "Hẹn đăng" với tác giả và biên tập viên, khách chưa thấy.
 - Chưa có trình soạn thảo rich text; chưa giới hạn số lần đăng nhập sai.
+- Thông báo cho người dùng chỉ hiện một lần ở lần tải trang kế tiếp, chưa có trang xem lại lịch sử thông báo.
 - Một số trang phụ (Hướng dẫn, FAQ, Liên hệ, Góp ý) dẫn tới trang "Đang phát triển".
 
 ## Tài liệu

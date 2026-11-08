@@ -43,6 +43,7 @@ $panelIcons = [
     'plus'      => '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
     'folder'    => '<path d="M3 7h7l2 2h9v11H3z"/><path d="M3 7V5h7l2 2"/>',
     'tag'       => '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/>',
+    'user'      => '<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
     'comment'   => '<path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-3a3 3 0 0 1-2-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3z"/><path d="M7 9h10M7 13h7"/>',
 ];
 
@@ -61,11 +62,13 @@ $panelMenus = [
     'editor' => [
         ['dashboard', 'Tổng quan', 'editor/dashboard.php', 'dashboard'],
         ['posts', 'Duyệt bài', 'editor/posts.php', 'review'],
+        ['profile', 'Trang cá nhân', 'trang-ca-nhan.php', 'user'],
     ],
     'author' => [
         ['dashboard', 'Tổng quan', 'author/dashboard.php', 'dashboard'],
         ['posts', 'Bài viết của tôi', 'author/posts.php', 'post'],
         ['create', 'Tạo bài viết', 'author/create.php', 'plus'],
+        ['profile', 'Trang cá nhân', 'trang-ca-nhan.php', 'user'],
     ],
 ][$panelRole];
 
@@ -81,6 +84,7 @@ $panelDisplayName = (string) ($panelUser['full_name'] ?? $panelMeta['name']);
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <?php if ($panelRole !== 'admin'): ?><link rel="stylesheet" href="<?= e(BASE_URL) ?>assets/css/common.css"><?php endif; ?>
 <link rel="stylesheet" href="<?= e(BASE_URL) ?>assets/css/admin.css">
+<link rel="stylesheet" href="<?= e(BASE_URL) ?>assets/css/avatar.css">
 <?php if ($pageCss !== ''): ?><link rel="stylesheet" href="<?= e(BASE_URL) ?>assets/css/<?= e($pageCss) ?>"><?php endif; ?>
 </head><body class="admin-body panel-<?= e($panelRole) ?>">
 <div class="admin-layout"><aside class="admin-sidebar">
@@ -94,6 +98,7 @@ $panelDisplayName = (string) ($panelUser['full_name'] ?? $panelMeta['name']);
 </nav><div class="admin-sidebar-note"><strong>Nhịp Khoa</strong><span>Quản lý nội dung an toàn, rõ ràng và đúng vai trò.</span></div>
 </aside><div class="admin-workspace"><header class="admin-topbar">
 <div><span class="admin-kicker"><?= e($panelMeta['kicker']) ?></span><strong><?= e($pageTitle) ?></strong></div>
-<div class="admin-profile"><span class="admin-avatar"><?= e(mb_strtoupper(mb_substr($panelDisplayName, 0, 1))) ?></span><span class="admin-profile-copy"><b><?= e($panelDisplayName) ?></b><small><?= e($panelMeta['name']) ?></small></span>
+<div class="admin-profile"><?php if ($panelRole !== 'admin'): ?><a class="admin-profile-link" href="<?= e(BASE_URL) ?>trang-ca-nhan.php" title="Trang cá nhân"><?php endif; ?><span class="admin-avatar"><?= avatarInner($panelDisplayName, $panelUser['avatar'] ?? null) ?></span><span class="admin-profile-copy"><b><?= e($panelDisplayName) ?></b><small><?= e($panelMeta['name']) ?></small></span><?php if ($panelRole !== 'admin'): ?></a><?php endif; ?>
 <form method="post" action="<?= e(BASE_URL) ?>dang-xuat.php"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><button type="submit">Đăng xuất</button></form></div>
 </header><main class="admin-main<?= $panelRole === 'admin' ? '' : ' panel-flush' ?>">
+<?= notificationBanner() ?>

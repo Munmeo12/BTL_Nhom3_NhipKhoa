@@ -7,6 +7,9 @@ use PDO;
 
 final class Post
 {
+    /** Tốc độ đọc ước tính (từ/phút) để tính "X phút đọc". */
+    private const WORDS_PER_MINUTE = 200;
+
     public function __construct(private readonly PDO $pdo)
     {
     }
@@ -14,9 +17,9 @@ final class Post
     public function publishedForHome(int $limit = 4): array
     {
         $statement = $this->pdo->prepare(
-            "SELECT p.id, p.title, p.summary, p.thumbnail, p.published_at, p.created_at,
+            "SELECT p.id, p.title, p.summary, p.content, p.thumbnail, p.published_at, p.created_at,
                     p.view_count, p.is_featured,
-                    c.name AS category_name, c.slug AS category_slug, u.full_name AS author_name
+                    c.name AS category_name, c.slug AS category_slug, u.full_name AS author_name, u.avatar AS author_avatar
              FROM posts p
              INNER JOIN categories c ON c.id = p.category_id
              INNER JOIN users u ON u.id = p.author_id
@@ -27,10 +30,32 @@ final class Post
         );
         $statement->bindValue(1, max(1, $limit), PDO::PARAM_INT);
         $statement->execute();
-        return $statement->fetchAll();
+        return $this->addReadingTime($statement->fetchAll());
     }
 
-    public function publishedList(?string $category, string $keyword, int $page, int $perPage = 6, ?string $tag = null): array
+    /** Số phút đọc ước tính: đếm từ trong nội dung, chia tốc độ đọc, tối thiểu 1 phút. */
+    public static function readingMinutes(string $content): int
+    {
+        $text = trim(strip_tags($content));
+        if ($text === '') {
+            return 1;
+        }
+        $words = preg_split('/\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        return max(1, (int) ceil(count($words) / self::WORDS_PER_MINUTE));
+    }
+
+    /** Gắn read_minutes cho từng bài rồi bỏ nội dung dài để không đưa ra view. */
+    private function addReadingTime(array $rows): array
+    {
+        foreach ($rows as &$row) {
+            $row['read_minutes'] = self::readingMinutes((string) ($row['content'] ?? ''));
+            unset($row['content']);
+        }
+        unset($row);
+        return $rows;
+    }
+
+    public function publishedList(?string $category, string $keyword, int $page, int $perPage = 6, ?string $tag = null, string $sort = 'newest'): array
     {
         $where = "p.status = 'published' AND (p.published_at IS NULL OR p.published_at <= NOW()) AND c.status = 'active'";
         $arguments = [];
@@ -57,12 +82,14 @@ final class Post
         $pages = max(1, (int) ceil($total / $perPage));
         $page = max(1, min($page, $pages));
 
+        // Chỉ nhận 2 giá trị cố định, không nối chuỗi từ người dùng vào SQL.
+        $direction = $sort === 'oldest' ? 'ASC' : 'DESC';
         $statement = $this->pdo->prepare(
             'SELECT p.id, p.title, p.summary, p.thumbnail, p.published_at, p.created_at,
                     p.view_count, p.is_featured,
-                    c.name AS category_name, c.slug AS category_slug, u.full_name AS author_name' .
+                    c.name AS category_name, c.slug AS category_slug, u.full_name AS author_name, u.avatar AS author_avatar' .
             $joins . 'WHERE ' . $where .
-            ' ORDER BY COALESCE(p.published_at, p.created_at) DESC, p.id DESC LIMIT ? OFFSET ?'
+            ' ORDER BY COALESCE(p.published_at, p.created_at) ' . $direction . ', p.id ' . $direction . ' LIMIT ? OFFSET ?'
         );
         foreach ($arguments as $index => $argument) {
             $statement->bindValue($index + 1, $argument, PDO::PARAM_STR);
@@ -82,7 +109,7 @@ final class Post
     public function findPublished(int $id): ?array
     {
         $statement = $this->pdo->prepare(
-            "SELECT p.*, c.name AS category_name, c.slug AS category_slug, u.full_name AS author_name
+            "SELECT p.*, c.name AS category_name, c.slug AS category_slug, u.full_name AS author_name, u.avatar AS author_avatar
              FROM posts p
              INNER JOIN categories c ON c.id = p.category_id
              INNER JOIN users u ON u.id = p.author_id
@@ -163,7 +190,7 @@ final class Post
     {
         $statement = $this->pdo->prepare(
             'SELECT p.*, (p.published_at IS NOT NULL AND p.published_at > NOW()) AS is_scheduled,
-                    c.name AS category_name, u.full_name AS author_name
+                    c.name AS category_name, u.full_name AS author_name, u.avatar AS author_avatar
              FROM posts p
              LEFT JOIN categories c ON c.id = p.category_id
              LEFT JOIN users u ON u.id = p.author_id
@@ -230,7 +257,7 @@ final class Post
     {
         $statement = $this->pdo->prepare(
             "SELECT p.id, p.title, p.thumbnail, p.created_at,
-                    u.full_name AS author_name, c.name AS category_name
+                    u.full_name AS author_name, u.avatar AS author_avatar, c.name AS category_name
              FROM posts p
              INNER JOIN users u ON u.id = p.author_id
              LEFT JOIN categories c ON c.id = p.category_id
@@ -257,7 +284,7 @@ final class Post
         $statement = $this->pdo->prepare(
             'SELECT p.id, p.title, p.thumbnail, p.status, p.created_at, p.published_at, p.is_featured,
                     (p.published_at IS NOT NULL AND p.published_at > NOW()) AS is_scheduled,
-                    u.full_name AS author_name, c.name AS category_name
+                    u.full_name AS author_name, u.avatar AS author_avatar, c.name AS category_name
              FROM posts p INNER JOIN users u ON u.id = p.author_id
              LEFT JOIN categories c ON c.id = p.category_id
              WHERE ' . $where . ' ORDER BY p.created_at DESC LIMIT ? OFFSET ?'
@@ -276,7 +303,7 @@ final class Post
     {
         $statement = $this->pdo->prepare(
             "SELECT p.*, (p.published_at IS NOT NULL AND p.published_at > NOW()) AS is_scheduled,
-                    u.full_name AS author_name, c.name AS category_name
+                    u.full_name AS author_name, u.avatar AS author_avatar, c.name AS category_name
              FROM posts p INNER JOIN users u ON u.id = p.author_id
              LEFT JOIN categories c ON c.id = p.category_id
              WHERE p.id = ? AND p.status IN ('pending','published','rejected') LIMIT 1"
