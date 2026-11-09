@@ -8,7 +8,7 @@ declare(strict_types=1);
 /** @var string $databaseError */
 /** @var array $roleNames */
 
-$statusLabels = ['pending' => 'Chờ duyệt', 'approved' => 'Đã duyệt', 'rejected' => 'Đã từ chối'];
+$statusLabels = ['pending' => 'Chờ duyệt', 'approved' => 'Đã duyệt', 'rejected' => 'Đã từ chối', 'revoked' => 'Đã thu hồi quyền'];
 $tabs = [
     'pending' => 'Chờ duyệt (' . (int) $counts['pending'] . ')',
     'approved' => 'Đã duyệt (' . (int) $counts['approved'] . ')',
@@ -25,6 +25,7 @@ $dateFormat = static fn(?string $value): string => $value ? date('d/m/Y H:i', st
 .status-chip.pending{color:#6e4f1b;background:#fff3d8}
 .status-chip.approved{color:#286448;background:#e8f5ee}
 .status-chip.rejected{color:#8b3330;background:#fae7e6}
+.status-chip.revoked{color:#5b6475;background:#eceef2}
 .ar-list{display:grid;gap:14px}
 .ar-item{padding:20px 22px;background:#fff;border:1px solid #dce0e7;border-radius:12px;box-shadow:0 7px 22px rgba(20,32,53,.04)}
 .ar-item header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
@@ -59,14 +60,14 @@ $dateFormat = static fn(?string $value): string => $value ? date('d/m/Y H:i', st
 </nav>
 
 <div class="ar-list">
-    <?php foreach ($requests as $item): $isPending = $item['status'] === 'pending'; ?>
+    <?php foreach ($requests as $item): $isPending = $item['status'] === 'pending'; $shownStatus = ($item['status'] === 'approved' && $item['role'] === 'reader') ? 'revoked' : (string) $item['status']; ?>
         <article class="ar-item">
             <header>
                 <div class="user-cell">
-                    <span><?= e(mb_strtoupper(mb_substr((string) $item['full_name'], 0, 1))) ?></span>
+                    <span><?= avatarInner((string) $item['full_name'], $item['avatar'] ?? null) ?></span>
                     <div><b><?= e($item['full_name']) ?></b><small><?= e($item['email']) ?> · hiện là <?= e($roleNames[$item['role']] ?? $item['role']) ?></small></div>
                 </div>
-                <span class="status-chip <?= e($item['status']) ?>"><?= e($statusLabels[$item['status']] ?? $item['status']) ?></span>
+                <span class="status-chip <?= e($shownStatus) ?>"><?= e($statusLabels[$shownStatus] ?? $shownStatus) ?></span>
             </header>
 
             <dl>

@@ -21,7 +21,7 @@ Tài khoản mẫu (`database/seed.sql`, `seed_demo.sql`), mật khẩu chung `A
 | Workflow nháp → chờ duyệt → đăng/từ chối | cột `posts.status`; tác giả gửi duyệt, biên tập/admin duyệt/từ chối (`Post::review`) |
 | Trang chủ, danh mục, chi tiết, tìm kiếm | `index.php`, `pages/*.php`, `bai-viet.php`, `pages/tim-kiem.php` (tìm cả theo thẻ: `?tag=slug`) |
 | Bình luận chờ duyệt/hiển thị/ẩn | `comments.status` = pending/approved/hidden; Admin: `admin/binhluan.php` |
-| Upload ảnh đại diện kiểm tra loại và kích thước | `ImageUploadService` (JPG/PNG/WEBP, tối đa 5MB, kiểm tra MIME thật) |
+| Upload ảnh bìa bài viết kiểm tra loại và kích thước | `ImageUploadService` (JPG/PNG/WEBP, tối đa 5MB, kiểm tra MIME thật) |
 | Endpoint JSON bằng Fetch API | `admin/api/duyet-binh-luan.php` (duyệt/ẩn/hiện/xóa bình luận, gọi bằng `fetch()`) |
 
 ## Chức năng nâng cao đã có
@@ -30,6 +30,9 @@ Tài khoản mẫu (`database/seed.sql`, `seed_demo.sql`), mật khẩu chung `A
 - Lượt xem: `posts.view_count`, chỉ đếm độc giả/khách, mỗi phiên 1 lần cho mỗi bài (`Post::incrementViews`).
 - Bài nổi bật: `posts.is_featured`, biên tập viên/admin bật tắt; bài nổi bật xếp đầu trang chủ.
 - Lịch xuất bản: biên tập viên hẹn giờ khi duyệt, lưu vào `posts.published_at`; chưa tới giờ thì khách chưa thấy.
+- Trang cá nhân (`trang-ca-nhan.php`): đổi tên, đổi mật khẩu, đổi/xóa ảnh đại diện (tối đa 2MB); Admin không dùng trang này.
+- Thông báo người dùng (`user_notifications`): hiện một lần sau khi Admin đổi vai trò hoặc duyệt/từ chối yêu cầu làm tác giả.
+- Sắp xếp danh sách bài Mới nhất / Cũ nhất và "X phút đọc" (`Post::readingMinutes`, 200 từ/phút).
 - Chưa làm: trình soạn thảo rich text.
 
 Với database cũ chạy thêm `database/migrations/2026_11_03_advanced_features.sql`.
@@ -42,10 +45,20 @@ Với database cũ chạy thêm `database/migrations/2026_11_03_advanced_feature
 | 2 | Tác giả A không sửa bài của tác giả B | Đăng nhập A, mở `author/edit.php?id=<bài của B>` | 404 "không có quyền chỉnh sửa" (`findOwned` lọc theo `author_id`) |
 | 3 | Biên tập duyệt bài, bài hiện ngoài trang chủ | Tác giả gửi duyệt → biên tập duyệt → mở trang chủ | Bài xuất hiện |
 | 4 | Slug trùng được xử lý | Tạo hai bài cùng tiêu đề | Slug thứ hai có hậu tố `-2` (`Slugger::unique`), không lỗi |
-| 5 | Upload file không phải ảnh bị từ chối | Chọn file `.txt`/`.php` làm ảnh đại diện | Thông báo "Chỉ chấp nhận ảnh JPG, PNG hoặc WEBP" |
+| 5 | Upload file không phải ảnh bị từ chối | Chọn file `.txt`/`.php` làm ảnh bìa bài viết | Thông báo "Chỉ chấp nhận ảnh JPG, PNG hoặc WEBP" |
 | 6 | Bình luận chứa script không chạy | Bình luận `<script>alert(1)</script>`, admin duyệt | Hiển thị thành chữ, không hiện hộp thoại (`e()`) |
 | 7 | Tìm kiếm chỉ trả bài đã xuất bản | Tìm từ có trong bài nháp | Không thấy bài nháp |
 | 8 | CSRF sai thì thao tác bị từ chối | Xóa `csrf_token` trong form bằng DevTools rồi gửi | HTTP 419 "Phiên làm việc không hợp lệ" |
+
+## Kiểm tra thêm (tính năng bổ sung)
+
+| # | Cách thử | Kết quả mong đợi |
+|---|---|---|
+| 9 | Độc giả mở `trang-ca-nhan.php`, đổi tên; đổi mật khẩu nhưng nhập sai mật khẩu hiện tại | Tên đổi được; mật khẩu sai bị báo lỗi, không đổi |
+| 10 | Tải lên file không phải ảnh, hoặc ảnh quá 2MB, làm ảnh đại diện | Bị từ chối kèm thông báo lỗi |
+| 11 | Admin mở `trang-ca-nhan.php` | Được chuyển về dashboard |
+| 12 | Admin đổi vai trò một tác giả về Độc giả, rồi người đó vào lại | Thấy khung thông báo một lần; yêu cầu tác giả cũ hiện "Đã thu hồi" |
+| 13 | Mở một danh mục, chọn Sắp xếp = Cũ nhất | Bài cũ nhất lên đầu, phân trang vẫn giữ lựa chọn |
 
 Kịch bản demo: tác giả tạo bài nháp → gửi duyệt → biên tập duyệt → khách tìm và đọc bài →
 gửi bình luận → admin duyệt bình luận.

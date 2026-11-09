@@ -56,6 +56,9 @@ final class PublicPostController extends Controller
         $keyword = $isSearch ? trim((string) $request->query('q', '')) : '';
         $tag = $isSearch ? trim((string) $request->query('tag', '')) : '';
         $tagName = '';
+        $sort = (string) $request->query('sort', 'newest') === 'oldest' ? 'oldest' : 'newest';
+        // Giữ lựa chọn sắp xếp khi chuyển trang.
+        $filterQuery = $sort === 'oldest' ? ['sort' => 'oldest'] : [];
         $requestedPage = max(1, (int) $request->query('page', 1));
         $data = ['posts' => [], 'total' => 0, 'pages' => 1, 'page' => 1];
         $latest = [];
@@ -67,7 +70,7 @@ final class PublicPostController extends Controller
                 $found = (new Tag($this->pdo()))->findBySlug($tag);
                 $tagName = (string) ($found['name'] ?? '');
             }
-            $data = $posts->publishedList($category, $keyword, $requestedPage, 6, $tag !== '' ? $tag : null);
+            $data = $posts->publishedList($category, $keyword, $requestedPage, 6, $tag !== '' ? $tag : null, $sort);
             if (!$isSearch) {
                 $latest = array_slice($posts->publishedList(null, '', 1)['posts'], 0, 3);
             }
@@ -106,12 +109,11 @@ final class PublicPostController extends Controller
 
         $this->render('public.list', compact(
             'category', 'isSearch', 'keyword', 'tag', 'requestedPage', 'data', 'latest',
-            'loadError', 'descriptions', 'pageTitle', 'context', 'baseQuery'
+            'loadError', 'descriptions', 'pageTitle', 'context', 'baseQuery', 'sort', 'filterQuery'
         ) + [
             'activeNav' => $category ?? '',
             'publicStyles' => true,
             'categories' => $categories,
-            'grid' => in_array($category, ['hoc-tap', 'su-kien'], true),
         ], 'layouts.public');
     }
 

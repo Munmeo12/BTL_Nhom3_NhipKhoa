@@ -194,38 +194,6 @@
 
 
 /* ============================================================
-   THAO TÁC
-   ============================================================ */
-
-.category-actions {
-    white-space: nowrap;
-}
-
-.category-actions a {
-    color: #2563eb;
-    text-decoration: none;
-    margin-right: 10px;
-}
-
-.category-actions a:hover {
-    text-decoration: underline;
-}
-
-.category-actions .delete-link {
-    color: #dc2626;
-}
-
-.category-actions .delete-link:hover {
-    color: #b91c1c;
-}
-
-.category-action-separator {
-    color: #9ca3af;
-    margin-right: 10px;
-}
-
-
-/* ============================================================
    KHÔNG CÓ DỮ LIỆU
    ============================================================ */
 
@@ -508,26 +476,18 @@
                              THAO TÁC
                              ================================================= -->
 
-                        <td class="category-actions">
-
-                            <a
-                                href="category-edit.php?id=<?= (int) $category['id'] ?>"
-                            >
-                                Sửa
-                            </a>
-
-                            <span class="category-action-separator">
-                                |
-                            </span>
-
-                            <a
-                                href="category-delete.php?id=<?= (int) $category['id'] ?>"
-                                class="delete-link"
-                                onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');"
-                            >
-                                Xóa
-                            </a>
-
+                        <td>
+                            <div class="row-actions">
+                                <a
+                                    class="status-action view"
+                                    href="category-edit.php?id=<?= (int) $category['id'] ?>"
+                                >Sửa</a>
+                                <a
+                                    class="status-action lock"
+                                    href="category-delete.php?id=<?= (int) $category['id'] ?>"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');"
+                                >Xóa</a>
+                            </div>
                         </td>
 
                     </tr>

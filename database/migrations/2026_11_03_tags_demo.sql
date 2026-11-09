@@ -1,5 +1,4 @@
 USE nhip_khoa;
--- Chạy sau khi bảng tags/post_tags đã có (xem 2026_10_23_add_tags.sql). Chỉ thêm dữ liệu mẫu.
 
 -- Thẻ mẫu và gán thẻ cho bài mẫu
 INSERT IGNORE INTO tags (id, slug, name) VALUES

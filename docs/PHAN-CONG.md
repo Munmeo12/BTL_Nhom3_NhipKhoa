@@ -3,7 +3,7 @@
 Mỗi thành viên phụ trách một vai trò. Khi báo cáo, mỗi người giải thích được ít nhất một luồng
 **route → controller → model → view** trong phần của mình (tiêu chí của đề).
 
-## Phần chung cả nhóm phải hiểu
+## Phần chung cả nhóm 
 
 Điểm vào mỏng (`*.php`) → `bootstrap/app.php` → Controller (`requireRole`, `verifyCsrf`) → Model (SQL) →
 `View::render` trong layout. Vòng đời bài: `draft → pending → published | rejected`. Ba lớp bảo vệ:
@@ -23,13 +23,15 @@ prepared statement, `e()`, CSRF.
 ## Nguyễn Hải Vân - Biên tập viên
 
 - **Controller:** `EditorPostController` (duyệt bài, cho Biên tập viên và Admin); `CommentController`
-  (kiểm duyệt bình luận, **chỉ Admin truy cập được**, Hải Vân phụ trách giải thích code).- **Model:** `Post` (`editorCounts`, `pendingForEditor`, `forEditor`, `findForReview`, `review`,
+  (kiểm duyệt bình luận, **chỉ Admin truy cập được**, Hải Vân phụ trách giải thích code).
+- **Model:** `Post` (`editorCounts`, `pendingForEditor`, `forEditor`, `findForReview`, `review`,
   `unpublish`, `deleteAny`, `setFeatured`), `Comment`.
 - **View/điểm vào:** `editor/*.php`, `app/Views/editor/*`, `app/Views/admin/posts.php`,
   `admin/binhluan.php`, `admin/chi-tiet-binh-luan.php`, `admin/api/duyet-binh-luan.php`, `layouts/editor`.
 - **Cần giải thích:** vòng đời bài, `UPDATE ... WHERE status = 'pending'` chống duyệt đè,
   hẹn giờ xuất bản (`published_at`), bài nổi bật, endpoint JSON và `fetch()` duyệt bình luận.
 - **Lưu ý demo:** thao tác duyệt bình luận trên giao diện làm bằng tài khoản Admin.
+
 ## Đào Khánh Trung - Tác giả
 
 - **Controller/Service:** `AuthorPostController`, `AuthorRequestController::form`, `ImageUploadService`, `Slugger`.
@@ -49,6 +51,15 @@ prepared statement, `e()`, CSRF.
   `app/Views/public/*`, `app/Views/impact/*`, `layouts/public`, `includes/header|footer|public-posts.php`.
 - **Cần giải thích:** vì sao chỉ bài `published` và đã tới giờ mới hiện, tìm kiếm có phân trang,
   bình luận của độc giả ở trạng thái chờ duyệt, Impact Box không lưu trùng (UNIQUE), đếm lượt xem mỗi phiên một lần.
+
+## Phần chung: trang cá nhân, ảnh đại diện, thông báo, sắp xếp
+
+- **Controller:** `ProfileController` (đổi tên, đổi mật khẩu, đổi/xóa ảnh đại diện); `PublicPostController` (tham số `sort`).
+- **Model:** `User` (`profile`, `updateName`, `updatePassword`, `updateAvatar`), `UserNotification`, `Post` (`publishedList` có `$sort`, `readingMinutes`).
+- **View/điểm vào:** `trang-ca-nhan.php`, `app/Views/profile/show.php`, `assets/css/avatar.css`, `assets/css/profile.css`,
+  helper `avatarUrl/avatarInner/avatarTag/notificationBanner` trong `bootstrap/app.php`.
+- **Cần giải thích:** vì sao Admin bị chặn khỏi trang cá nhân, đổi mật khẩu phải xác nhận mật khẩu hiện tại, thông báo hiện một lần
+  rồi đánh dấu `read_at`, "Đã thu hồi" được tính từ vai trò hiện tại thay vì lưu thêm trạng thái.
 
 ## Người phụ trách 8 tình huống kiểm thử
 

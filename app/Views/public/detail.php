@@ -40,6 +40,18 @@ declare(strict_types=1);
         border-color: #bbb;
     }
 
+    /* Bài đã nằm trong Impact Box */
+    .article-save-button.is-saved {
+        background: #e8eef8;
+        border-color: #b6c8e6;
+        color: #1b3a6e;
+        text-decoration: none;
+    }
+
+    .article-save-button.is-saved:hover {
+        background: #dbe6f6;
+    }
+
     /* =========================
        MODAL
     ========================= */
@@ -241,7 +253,7 @@ declare(strict_types=1);
                     <p class="public-byline">
                         <?= e(publicPostDate($post)) ?>
                         · Tác giả:
-                        <?= e($post['author_name']) ?>
+                        <?= avatarTag((string) $post['author_name'], $post['author_avatar'] ?? null, 'xs') ?><?= e($post['author_name']) ?>
                         · <?= (int) ($post['view_count'] ?? 0) ?> lượt xem
                         <?php if (!empty($post['is_featured'])): ?><span class="comment-role">Nổi bật</span><?php endif; ?>
                     </p>
@@ -273,14 +285,29 @@ declare(strict_types=1);
 
                         <?php if (!empty($_SESSION['user'])): ?>
 
-                            <button
-                                type="button"
-                                class="article-save-button"
-                                onclick="openSaveModal()"
-                            >
-                                ♡
-                                <span>Lưu vào Impact Box</span>
-                            </button>
+                            <?php if (!empty($isSaved)): ?>
+
+                                <a
+                                    href="<?= e(BASE_URL) ?>views/impact-box.php"
+                                    class="article-save-button is-saved"
+                                    title="Xem trong Impact Box"
+                                >
+                                    ♥
+                                    <span>Đã lưu trong Impact Box</span>
+                                </a>
+
+                            <?php else: ?>
+
+                                <button
+                                    type="button"
+                                    class="article-save-button"
+                                    onclick="openSaveModal()"
+                                >
+                                    ♡
+                                    <span>Lưu vào Impact Box</span>
+                                </button>
+
+                            <?php endif; ?>
 
                         <?php else: ?>
 
@@ -326,11 +353,11 @@ declare(strict_types=1);
                                 <?php foreach ($comments as $comment): ?>
                                     <article class="comment-item">
                                         <div class="comment-avatar" aria-hidden="true">
-                                            <?= e(mb_substr((string) ($comment['full_name'] ?? 'N'), 0, 1)) ?>
+                                            <?= avatarInner((string) ($comment['full_name'] ?? 'N'), $comment['avatar'] ?? null) ?>
                                         </div>
                                         <div class="comment-body">
                                             <strong><?= e($comment['full_name'] ?? 'Người dùng') ?><?php
-                                                $roleLabel = ['admin' => 'Quản trị viên', 'editor' => 'Biên tập viên', 'author' => 'Tác giả'][$comment['role'] ?? ''] ?? '';
+                                                $roleLabel = ['admin' => 'Quản trị viên', 'editor' => 'Biên tập viên'][$comment['role'] ?? ''] ?? '';
                                                 if ((int) ($comment['user_id'] ?? 0) === (int) ($post['author_id'] ?? -1)) { $roleLabel = 'Tác giả bài viết'; }
                                             ?><?php if ($roleLabel !== ''): ?> <span class="comment-role"><?= e($roleLabel) ?></span><?php endif; ?></strong>
                                             <p><?= nl2br(e($comment['content'])) ?></p>
@@ -469,7 +496,7 @@ declare(strict_types=1);
 </section>
 
 
-<?php if ($post && !empty($_SESSION['user'])): ?>
+<?php if ($post && !empty($_SESSION['user']) && empty($isSaved)): ?>
 
     <!-- =====================================================
          MODAL LƯU VÀO IMPACT BOX
@@ -651,5 +678,3 @@ declare(strict_types=1);
         }
     });
 </script>
-
-

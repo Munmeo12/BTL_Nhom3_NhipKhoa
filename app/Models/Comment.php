@@ -15,7 +15,7 @@ final class Comment
     {
         $statement = $this->pdo->prepare(
             "SELECT comments.id, comments.content, comments.created_at, comments.user_id,
-                    users.full_name, roles.code AS role
+                    users.full_name, users.avatar, roles.code AS role
              FROM comments
              INNER JOIN users ON users.id = comments.user_id
              INNER JOIN roles ON roles.id = users.role_id
@@ -51,7 +51,7 @@ final class Comment
     public function search(string $keyword = '', string $status = 'all', int $postId = 0): array
     {
         $sql = 'SELECT c.id, c.content, c.status, c.created_at,
-                       u.full_name AS user_name, r.code AS user_role, p.title AS post_title
+                       u.full_name AS user_name, u.avatar AS user_avatar, r.code AS user_role, p.title AS post_title
                 FROM comments c LEFT JOIN users u ON u.id = c.user_id
                 LEFT JOIN roles r ON r.id = u.role_id
                 LEFT JOIN posts p ON p.id = c.post_id WHERE 1=1';
@@ -83,7 +83,7 @@ final class Comment
     {
         $statement = $this->pdo->prepare(
             'SELECT c.id, c.content, c.status, c.created_at AS comment_created_at,
-                    u.id AS user_id, u.full_name AS user_name, u.email AS user_email,
+                    u.id AS user_id, u.full_name AS user_name, u.avatar AS user_avatar, u.email AS user_email,
                     p.id AS post_id, p.title AS post_title, p.thumbnail AS post_thumbnail,
                     p.created_at AS post_created_at
              FROM comments c LEFT JOIN users u ON u.id = c.user_id

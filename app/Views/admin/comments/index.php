@@ -205,42 +205,6 @@
 
 
 /* =========================================================
-   NÚT THAO TÁC
-   ========================================================= */
-
-.action-button {
-    padding: 7px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 2px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #fff;
-}
-
-.action-button:hover {
-    opacity: 0.9;
-}
-
-.btn-duyet {
-    background: #198754;
-}
-
-.hide-button {
-    background: #6c757d;
-}
-
-.show-button {
-    background: #2563eb;
-}
-
-.delete-button {
-    background: #dc2626;
-}
-
-
-/* =========================================================
    KHÔNG CÓ DỮ LIỆU
    ========================================================= */
 
@@ -484,7 +448,7 @@
 
                         <td>
 
-                            <?= htmlspecialchars(
+                            <?= avatarTag((string) ($item['user_name'] ?? ''), $item['user_avatar'] ?? null, 'xs') ?><?= htmlspecialchars(
                                 $item['user_name']
                                     ?? 'Không xác định',
                                 ENT_QUOTES,
@@ -595,6 +559,7 @@
                              ================================================= -->
 
                         <td>
+<div class="row-actions">
 
                             <?php if (
                                 ($item['status'] ?? '') === 'pending'
@@ -605,7 +570,7 @@
 
                                 <button
                                     type="button"
-                                    class="action-button btn-duyet"
+                                    class="status-action unlock action-button btn-duyet"
                                     data-id="<?= (int) $item['id'] ?>"
                                     data-csrf="<?= htmlspecialchars(
                                         $csrfToken,
@@ -621,7 +586,7 @@
 
                                 <button
                                     type="button"
-                                    class="action-button hide-button"
+                                    class="status-action view action-button hide-button"
                                     data-id="<?= (int) $item['id'] ?>"
                                     data-csrf="<?= htmlspecialchars(
                                         $csrfToken,
@@ -642,7 +607,7 @@
 
                                 <button
                                     type="button"
-                                    class="action-button hide-button"
+                                    class="status-action view action-button hide-button"
                                     data-id="<?= (int) $item['id'] ?>"
                                     data-csrf="<?= htmlspecialchars(
                                         $csrfToken,
@@ -663,7 +628,7 @@
 
                                 <button
                                     type="button"
-                                    class="action-button show-button"
+                                    class="status-action unlock action-button show-button"
                                     data-id="<?= (int) $item['id'] ?>"
                                     data-csrf="<?= htmlspecialchars(
                                         $csrfToken,
@@ -682,7 +647,7 @@
 
                             <button
                                 type="button"
-                                class="action-button delete-button"
+                                class="status-action lock action-button delete-button"
                                 data-id="<?= (int) $item['id'] ?>"
                                 data-csrf="<?= htmlspecialchars(
                                     $csrfToken,
@@ -693,7 +658,8 @@
                                 Xóa
                             </button>
 
-                        </td>
+                        </div>
+</td>
 
                     </tr>
 

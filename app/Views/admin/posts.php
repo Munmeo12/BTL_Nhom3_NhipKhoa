@@ -1,7 +1,9 @@
 <?php declare(strict_types=1);
 $statusLabels = ['pending' => 'Chờ duyệt', 'published' => 'Đã duyệt', 'rejected' => 'Từ chối'];
 $tabs = ['all' => ['Tất cả', 'total'], 'pending' => ['Chờ duyệt', 'pending'], 'published' => ['Đã duyệt', 'published'], 'rejected' => ['Từ chối', 'rejected']];
+$isAdmin = (bool) ($isAdmin ?? false);
 ?>
+<div class="review-shell<?= $isAdmin ? '' : ' with-pad' ?>">
 <section class="admin-heading"><div><p>KIỂM DUYỆT NỘI DUNG</p><h1>Quản lý bài viết</h1><span>Xem, duyệt hoặc từ chối các bài viết do tác giả gửi lên.</span></div></section>
 <?php if ($success !== ''): ?><div class="admin-alert success"><?= e($success) ?></div><?php endif; ?>
 <?php if ($error !== ''): ?><div class="admin-alert error"><?= e($error) ?></div><?php endif; ?>
@@ -15,7 +17,7 @@ $tabs = ['all' => ['Tất cả', 'total'], 'pending' => ['Chờ duyệt', 'pendi
 <?php foreach ($posts as $post): ?><tr<?= $viewId === (int) $post['id'] ? ' class="row-selected"' : '' ?>>
 <td><?= 'BV' . str_pad((string) $post['id'], 3, '0', STR_PAD_LEFT) ?></td>
 <td><div class="post-cell"><?php if ($post['thumbnail']): ?><img src="<?= e(BASE_URL) ?>assets/uploads/<?= e($post['thumbnail']) ?>" alt=""><?php else: ?><span class="post-thumb-empty">▤</span><?php endif; ?><b><?= e($post['title']) ?></b></div></td>
-<td><?= e($post['author_name']) ?></td>
+<td><?= avatarTag((string) $post['author_name'], $post['author_avatar'] ?? null, 'xs') ?><?= e($post['author_name']) ?></td>
 <td><?= e($post['category_name'] ?? 'Chưa phân loại') ?></td>
 <td><?= e(date('d/m/Y', strtotime($post['created_at']))) ?></td>
 <td><span class="status-chip post-<?= e($post['status']) ?>"><?= !empty($post['is_scheduled']) ? 'Hẹn đăng' : e($statusLabels[$post['status']] ?? $post['status']) ?></span><?= !empty($post['is_featured']) ? ' <span title="Bài nổi bật" style="color:#9c6b16">★</span>' : '' ?></td>
@@ -32,7 +34,7 @@ $tabs = ['all' => ['Tất cả', 'total'], 'pending' => ['Chờ duyệt', 'pendi
 <div class="post-detail-body">
 <h3><?= e($selectedPost['title']) ?></h3>
 <dl class="post-meta">
-<div><dt>Tác giả</dt><dd><?= e($selectedPost['author_name']) ?></dd></div>
+<div><dt>Tác giả</dt><dd><?= avatarTag((string) $selectedPost['author_name'], $selectedPost['author_avatar'] ?? null, 'xs') ?><?= e($selectedPost['author_name']) ?></dd></div>
 <div><dt>Chuyên mục</dt><dd><?= e($selectedPost['category_name'] ?? 'Chưa phân loại') ?></dd></div>
 <div><dt>Ngày gửi</dt><dd><?= e(date('d/m/Y', strtotime($selectedPost['created_at']))) ?></dd></div>
 <div><dt>Trạng thái</dt><dd><span class="status-chip post-<?= e($selectedPost['status']) ?>"><?= !empty($selectedPost['is_scheduled']) ? 'Hẹn đăng' : e($statusLabels[$selectedPost['status']] ?? $selectedPost['status']) ?></span><?= !empty($selectedPost['is_featured']) ? ' <span style="color:#9c6b16">★ Nổi bật</span>' : '' ?></dd></div>
@@ -43,21 +45,21 @@ $tabs = ['all' => ['Tất cả', 'total'], 'pending' => ['Chờ duyệt', 'pendi
 <?php if ($selectedPost['status'] === 'rejected' && $selectedPost['editor_note']): ?><div class="admin-alert error"><b>Lý do từ chối:</b><br><?= nl2br(e((string) $selectedPost['editor_note'])) ?></div><?php endif; ?>
 </div>
 <div class="post-detail-actions">
-<form method="post" onsubmit="return confirm('Xóa vĩnh viễn bài viết này cùng bình luận liên quan?')"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>"><button class="status-action lock" type="submit" name="action" value="delete">Xóa bài</button></form>
+<?php if ($isAdmin): ?><form method="post" onsubmit="return confirm('Xóa vĩnh viễn bài viết này cùng bình luận liên quan?')"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>"><button class="status-action lock" type="submit" name="action" value="delete">Xóa bài</button></form><?php endif; ?>
 <?php if ($selectedPost['status'] === 'pending'): ?>
 <button type="button" class="status-action lock" onclick="document.getElementById('rejectModal').classList.add('show')">Từ chối</button>
 <form method="post" class="schedule-form" onsubmit="return confirm('Bạn chắc chắn muốn duyệt bài này?')"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>"><label class="schedule-field">Hẹn giờ đăng (không bắt buộc)<input type="datetime-local" name="publish_at"></label><button class="filter-button" type="submit" name="action" value="approve">Duyệt bài</button></form>
 <?php elseif ($selectedPost['status'] === 'published'): ?>
 <span class="view-count"><?= (int) $selectedPost['view_count'] ?> lượt xem<?= !empty($selectedPost['is_scheduled']) ? ' · Hẹn đăng ' . e(date('H:i d/m/Y', strtotime((string) $selectedPost['published_at']))) : '' ?></span>
 <form method="post"><input type="hidden" name="csrf_token" value="<?= e(csrfToken()) ?>"><input type="hidden" name="post_id" value="<?= (int) $selectedPost['id'] ?>"><button class="status-action view" type="submit" name="action" value="<?= $selectedPost['is_featured'] ? 'unfeature' : 'feature' ?>">★ <?= $selectedPost['is_featured'] ? 'Bỏ nổi bật' : 'Đặt nổi bật' ?></button></form>
-<button type="button" class="filter-button" onclick="document.getElementById('rejectModal').classList.add('show')">Gỡ bài</button>
+<?php if ($isAdmin): ?><button type="button" class="filter-button" onclick="document.getElementById('rejectModal').classList.add('show')">Gỡ bài</button><?php endif; ?>
 <?php endif; ?>
 </div>
 </aside>
 <?php endif; ?>
 </div>
 
-<?php if ($selectedPost && in_array($selectedPost['status'], ['pending', 'published'], true)):
+<?php if ($selectedPost && ($selectedPost['status'] === 'pending' || ($isAdmin && $selectedPost['status'] === 'published'))):
     $isUnpublish = $selectedPost['status'] === 'published'; ?>
 <div class="admin-modal" id="rejectModal"><div class="admin-modal-box">
 <header><h2><?= $isUnpublish ? 'Gỡ bài viết' : 'Từ chối bài viết' ?></h2><button type="button" aria-label="Đóng" onclick="document.getElementById('rejectModal').classList.remove('show')">✕</button></header>
@@ -68,3 +70,4 @@ $tabs = ['all' => ['Tất cả', 'total'], 'pending' => ['Chờ duyệt', 'pendi
 </form></div></div>
 <script>document.getElementById('rejectModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});</script>
 <?php endif; ?>
+</div>

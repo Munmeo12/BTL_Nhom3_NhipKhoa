@@ -60,7 +60,7 @@
                                         <span><?= htmlspecialchars($post['title']) ?></span>
                                     </div>
                                 </td>
-                                <td><?= htmlspecialchars($post['author_name']) ?></td>
+                                <td><?= avatarTag((string) $post['author_name'], $post['author_avatar'] ?? null, 'xs') ?><?= htmlspecialchars($post['author_name']) ?></td>
                                 <td><?= htmlspecialchars($post['category_name'] ?? 'Chưa phân loại') ?></td>
                                 <td><?= date('d/m/Y',strtotime($post['created_at'])) ?></td>
                                 <td>
@@ -101,7 +101,7 @@
                     <h2><?= htmlspecialchars($selectedPost['title']) ?></h2>
 
                     <div class="meta">
-                        <p><b>Tác giả:</b> <?= htmlspecialchars($selectedPost['author_name']) ?></p>
+                        <p><b>Tác giả:</b> <?= avatarTag((string) $selectedPost['author_name'], $selectedPost['author_avatar'] ?? null, 'xs') ?><?= htmlspecialchars($selectedPost['author_name']) ?></p>
                         <p><b>Chuyên mục:</b> <?= htmlspecialchars($selectedPost['category_name'] ?? 'Chưa phân loại') ?></p>
                         <p><b>Ngày gửi:</b> <?= date('d/m/Y',strtotime($selectedPost['created_at'])) ?></p>
                         <p>

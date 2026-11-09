@@ -731,7 +731,7 @@ declare(strict_types=1);
 
 
             <a
-                href="<?= e($basePath ?? '') ?>index.php"
+                href="<?= e(BASE_URL) ?>pages/tim-kiem.php"
                 class="explore-button"
             >
                 Khám phá thêm bài viết
@@ -783,7 +783,7 @@ declare(strict_types=1);
 
 
             <a
-                href="<?= e(BASE_URL) ?>index.php"
+                href="<?= e(BASE_URL) ?>pages/tim-kiem.php"
                 class="explore-button"
             >
                 Khám phá bài viết
@@ -872,28 +872,17 @@ declare(strict_types=1);
     href="<?= BASE_URL ?>bai-viet.php?id=<?= $postId ?>"
     class="card-image-link"
 >
-                        <?php if (!empty($thumbnail)): ?>
+                                    <img
+                            class="impact-card-image"
 
-                            <img
-                                class="impact-card-image"
+                            src="<?= e(publicPostImage((string) $thumbnail, BASE_URL)) ?>"
 
-                                src="<?= e(publicPostImage((string) $thumbnail, BASE_URL)) ?>"
-
-                                alt="<?= htmlspecialchars(
-                                    $title,
-                                    ENT_QUOTES,
-                                    'UTF-8'
-                                ) ?>"
-                            >
-
-                        <?php else: ?>
-
-                            <div class="impact-card-no-image">
-                                Không có ảnh
-                            </div>
-
-                        <?php endif; ?>
-
+                            alt="<?= htmlspecialchars(
+                                $title,
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>"
+                        >
                     </a>
 
 
@@ -1763,6 +1752,3 @@ if (
 }
 
 </script>
-
-
-

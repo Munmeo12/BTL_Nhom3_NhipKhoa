@@ -148,3 +148,11 @@
 .schedule-field input{height:36px;padding:0 8px;border:1px solid #ccd1db;border-radius:7px;font:12px Inter,sans-serif}
 .post-detail-actions .view-count{margin-right:auto;align-self:center;color:#49576e;font-size:12px}
 .post-detail-actions{flex-wrap:wrap}
+
+.tag-form textarea{width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccd1db;border-radius:8px;font:13px Inter,sans-serif;resize:vertical}
+.review-shell.with-pad{padding:34px 36px 46px}
+@media(max-width:760px){.review-shell.with-pad{padding:24px 16px}}
+/* ===== Cột thao tác dùng chung: nút .status-action xếp ngang ===== */
+.row-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row-actions form{margin:0}
+.row-actions .status-action{display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 14px;cursor:pointer;text-decoration:none}

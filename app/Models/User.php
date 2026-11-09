@@ -14,7 +14,7 @@ final class User
     public function findByEmail(string $email): ?array
     {
         $statement = $this->pdo->prepare(
-            'SELECT u.id, u.email, u.password_hash, u.full_name, u.status, r.code AS role
+            'SELECT u.id, u.email, u.password_hash, u.full_name, u.avatar, u.status, r.code AS role
              FROM users u
              INNER JOIN roles r ON r.id = u.role_id
              WHERE u.email = :email
@@ -55,12 +55,50 @@ final class User
     public function sessionState(int $id): ?array
     {
         $statement = $this->pdo->prepare(
-            'SELECT u.status, u.full_name, r.code AS role
+            'SELECT u.status, u.full_name, u.avatar, r.code AS role
              FROM users u INNER JOIN roles r ON r.id = u.role_id
              WHERE u.id = ? LIMIT 1'
         );
         $statement->execute([$id]);
         return $statement->fetch() ?: null;
+    }
+
+    /** Hồ sơ của chính người dùng, dùng cho trang cá nhân. */
+    public function profile(int $id): ?array
+    {
+        $statement = $this->pdo->prepare(
+            'SELECT u.id, u.email, u.full_name, u.avatar, u.created_at, r.code AS role, r.name AS role_name
+             FROM users u INNER JOIN roles r ON r.id = u.role_id
+             WHERE u.id = ? LIMIT 1'
+        );
+        $statement->execute([$id]);
+        return $statement->fetch() ?: null;
+    }
+
+    public function updateName(int $id, string $fullName): bool
+    {
+        $statement = $this->pdo->prepare('UPDATE users SET full_name = ? WHERE id = ?');
+        return $statement->execute([$fullName, $id]);
+    }
+
+    public function passwordHash(int $id): ?string
+    {
+        $statement = $this->pdo->prepare('SELECT password_hash FROM users WHERE id = ? LIMIT 1');
+        $statement->execute([$id]);
+        $hash = $statement->fetchColumn();
+        return is_string($hash) ? $hash : null;
+    }
+
+    public function updatePassword(int $id, string $passwordHash): bool
+    {
+        $statement = $this->pdo->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
+        return $statement->execute([$passwordHash, $id]);
+    }
+
+    public function updateAvatar(int $id, ?string $avatar): bool
+    {
+        $statement = $this->pdo->prepare('UPDATE users SET avatar = ? WHERE id = ?');
+        return $statement->execute([$avatar, $id]);
     }
 
     public function adminDashboard(): array
@@ -72,7 +110,7 @@ final class User
             'locked' => (int) $this->pdo->query("SELECT COUNT(*) FROM users WHERE status = 'locked'")->fetchColumn(),
         ];
         $recent = $this->pdo->query(
-            'SELECT u.full_name, u.email, u.status, u.created_at, r.name AS role_name
+            'SELECT u.full_name, u.avatar, u.email, u.status, u.created_at, r.name AS role_name
              FROM users u INNER JOIN roles r ON r.id = u.role_id
              ORDER BY u.created_at DESC LIMIT 5'
         )->fetchAll();
@@ -100,7 +138,7 @@ final class User
         }
         $where = $conditions ? ' WHERE ' . implode(' AND ', $conditions) : '';
         $statement = $this->pdo->prepare(
-            'SELECT u.id, u.full_name, u.email, u.status, u.created_at,
+            'SELECT u.id, u.full_name, u.avatar, u.email, u.status, u.created_at,
                     r.code AS role, r.name AS role_name
              FROM users u INNER JOIN roles r ON r.id = u.role_id' . $where .
             ' ORDER BY u.created_at DESC LIMIT 50'

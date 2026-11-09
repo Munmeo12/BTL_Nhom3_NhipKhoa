@@ -38,6 +38,7 @@ final class AuthService
 
         $_SESSION['user']['role'] = (string) $state['role'];
         $_SESSION['user']['full_name'] = (string) $state['full_name'];
+        $_SESSION['user']['avatar'] = $state['avatar'] !== null ? (string) $state['avatar'] : null;
         self::$verifiedId = $id;
         return $_SESSION['user'];
     }
@@ -55,6 +56,7 @@ final class AuthService
             'id' => (int) $user['id'],
             'email' => (string) $user['email'],
             'full_name' => (string) $user['full_name'],
+            'avatar' => isset($user['avatar']) ? (string) $user['avatar'] : null,
             'role' => (string) $user['role'],
         ];
     }

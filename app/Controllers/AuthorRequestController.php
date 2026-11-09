@@ -166,8 +166,12 @@ final class AuthorRequestController extends Controller
                     throw new RuntimeException('Yêu cầu không hợp lệ.');
                 }
                 $model = new AuthorRequest($this->pdo());
+                $targetUser = $model->userIdOf($id);
                 if ($action === 'approve') {
                     $result = $model->approve($id, (int) $admin['id']);
+                    $this->notify($targetUser, $result === 'promoted'
+                        ? 'Yêu cầu làm tác giả của bạn đã được duyệt. Bạn giờ là Tác giả và có thể viết bài.'
+                        : 'Yêu cầu làm tác giả của bạn đã được duyệt.');
                     $_SESSION['admin_notice'] = $result === 'promoted'
                         ? 'Đã duyệt: tài khoản được nâng lên Tác giả.'
                         : 'Đã duyệt. Tài khoản này đã có quyền cao hơn Độc giả nên giữ nguyên vai trò.';
@@ -178,6 +182,7 @@ final class AuthorRequestController extends Controller
                         throw new RuntimeException('Lý do từ chối cần từ 5 đến 500 ký tự.');
                     }
                     $model->reject($id, (int) $admin['id'], $note);
+                    $this->notify($targetUser, 'Yêu cầu làm tác giả của bạn bị từ chối. Lý do: ' . $note);
                     $_SESSION['admin_notice'] = 'Đã từ chối yêu cầu và gửi lý do cho người dùng.';
                 } else {
                     throw new RuntimeException('Thao tác không hợp lệ.');
@@ -212,6 +217,18 @@ final class AuthorRequestController extends Controller
             'pageTitle' => 'Yêu cầu làm tác giả',
             'adminPage' => 'author-requests',
         ], 'layouts.admin');
+    }
+
+    /** Gửi thông báo cho người dùng; lỗi thông báo không được làm hỏng thao tác chính. */
+    private function notify(?int $userId, string $message): void
+    {
+        if ($userId === null) {
+            return;
+        }
+        try {
+            (new \App\Models\UserNotification($this->pdo()))->add($userId, $message);
+        } catch (Throwable) {
+        }
     }
 
     private function statusFilter(string $value): string

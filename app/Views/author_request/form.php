@@ -9,7 +9,10 @@ declare(strict_types=1);
 /** @var string $role */
 /** @var string $roleName */
 
-$statusLabels = ['pending' => 'Đang chờ duyệt', 'approved' => 'Đã được duyệt', 'rejected' => 'Bị từ chối'];
+$statusLabels = ['pending' => 'Đang chờ duyệt', 'approved' => 'Đã được duyệt', 'rejected' => 'Bị từ chối', 'revoked' => 'Đã bị thu hồi'];
+// Đã duyệt nhưng hiện lại là Độc giả nghĩa là Admin đã thu hồi quyền sau đó.
+$revoked = $latest !== null && $latest['status'] === 'approved' && $role === 'reader';
+$latestStatus = $revoked ? 'revoked' : (string) ($latest['status'] ?? '');
 $hasPending = $latest !== null && $latest['status'] === 'pending';
 $canSubmit = $role === 'reader' && !$hasPending && $databaseError === '';
 $landing = (new \App\Services\AuthService())->landingPage($role);
@@ -41,6 +44,7 @@ $dateFormat = static fn(?string $value): string => $value ? date('d/m/Y H:i', st
 .ar-chip.pending{color:#6e4f1b;background:#fff3d8}
 .ar-chip.approved{color:#286448;background:#e8f5ee}
 .ar-chip.rejected{color:#8b3330;background:#fae7e6}
+.ar-chip.revoked{color:#5b6475;background:#eceef2}
 .ar-meta{display:grid;grid-template-columns:130px 1fr;gap:8px 14px;margin:14px 0 0;font-size:13px;line-height:1.6}
 .ar-meta dt{color:#747f92}
 .ar-meta dd{margin:0;color:#0e1625;word-break:break-word}
@@ -71,7 +75,7 @@ $dateFormat = static fn(?string $value): string => $value ? date('d/m/Y H:i', st
 
     <?php if ($latest !== null): ?>
         <div class="ar-card">
-            <h2>Yêu cầu gần nhất <span class="ar-chip <?= e($latest['status']) ?>"><?= e($statusLabels[$latest['status']] ?? $latest['status']) ?></span></h2>
+            <h2>Yêu cầu gần nhất <span class="ar-chip <?= e($latestStatus) ?>"><?= e($statusLabels[$latestStatus] ?? $latestStatus) ?></span></h2>
             <dl class="ar-meta">
                 <dt>Gửi lúc</dt><dd><?= e($dateFormat($latest['created_at'])) ?></dd>
                 <dt>Chủ đề muốn viết</dt><dd><?= e($latest['topics']) ?></dd>
@@ -83,6 +87,8 @@ $dateFormat = static fn(?string $value): string => $value ? date('d/m/Y H:i', st
                 <div class="ar-note">Yêu cầu của bạn đang chờ quản trị viên xem xét. Bạn không cần gửi lại.</div>
             <?php elseif ($latest['status'] === 'rejected' && !empty($latest['admin_note'])): ?>
                 <div class="ar-note"><strong>Lý do từ chối:</strong> <?= nl2br(e($latest['admin_note'])) ?><br>Bạn có thể chỉnh lại và gửi yêu cầu mới ở bên dưới.</div>
+            <?php elseif ($revoked): ?>
+                <div class="ar-note">Quyền tác giả của bạn đã bị quản trị viên thu hồi, vai trò hiện tại là Độc giả. Bạn có thể gửi yêu cầu mới ở bên dưới.</div>
             <?php elseif ($latest['status'] === 'approved'): ?>
                 <div class="ar-note">Yêu cầu đã được duyệt.</div>
             <?php endif; ?>
@@ -134,10 +140,13 @@ $dateFormat = static fn(?string $value): string => $value ? date('d/m/Y H:i', st
         <div class="ar-card">
             <h2>Lịch sử yêu cầu</h2>
             <ul class="ar-history">
-                <?php foreach ($history as $item): ?>
+                <?php $seenApproved = false; foreach ($history as $item):
+                    $itemStatus = (string) $item['status'];
+                    if ($itemStatus === 'approved') { if (!$seenApproved && $role === 'reader') { $itemStatus = 'revoked'; } $seenApproved = true; }
+                ?>
                     <li>
                         <span><?= e($item['topics']) ?><br><small><?= e($dateFormat($item['created_at'])) ?></small></span>
-                        <span class="ar-chip <?= e($item['status']) ?>"><?= e($statusLabels[$item['status']] ?? $item['status']) ?></span>
+                        <span class="ar-chip <?= e($itemStatus) ?>"><?= e($statusLabels[$itemStatus] ?? $itemStatus) ?></span>
                     </li>
                 <?php endforeach; ?>
             </ul>
