@@ -9,11 +9,17 @@ $q = $keyword;
 .public-pages .public-sort{display:flex;align-items:center;gap:8px;margin:0;margin-left:auto}
 .public-pages .public-sort label{font-size:13px;font-weight:600;color:#49576e}
 .public-pages .public-sort select{height:38px;padding:0 10px;border:1px solid #ccd1db;border-radius:8px;background:#fff;font:14px Inter,Arial,sans-serif;color:#0e1625}
+.public-pages .public-search-clear{display:inline-block;margin-top:6px;font-size:13px}
 </style>
 <section class="public-pages"><div class="site-shell">
 <div class="public-heading">
     <div><p class="public-eyebrow">NHỊP KHOA · BÀI VIẾT</p><h1><?= e($pageTitle) ?></h1><p><?= e($isSearch ? (($tag ?? '') !== '' ? 'Các bài viết được gắn thẻ này.' : 'Tìm thông tin theo nội dung, danh mục, thẻ hoặc tác giả.') : $descriptions[$category]) ?></p></div>
     <?php if ($isSearch): ?><form class="public-search" action="tim-kiem.php" method="get" role="search"><label for="public-query">Từ khóa tìm kiếm</label><div><input id="public-query" name="q" type="search" value="<?= e($q) ?>" placeholder="Nhập từ khóa..."><button type="submit">Tìm kiếm</button></div></form><?php endif; ?>
+    <?php if (!$isSearch): ?><form class="public-search" method="get" role="search"><label for="public-query">Tìm trong “<?= e($pageTitle) ?>”</label>
+<?php foreach ($baseQuery as $key => $value): ?><input type="hidden" name="<?= e((string) $key) ?>" value="<?= e((string) $value) ?>"><?php endforeach; ?>
+<?php if ($sort === 'oldest'): ?><input type="hidden" name="sort" value="oldest"><?php endif; ?>
+<div><input id="public-query" name="q" type="search" value="<?= e($q) ?>" maxlength="100" placeholder="Nhập từ khóa..."><button type="submit">Tìm kiếm</button></div>
+<?php if ($q !== ''): ?><a class="public-search-clear" href="<?= e($baseQuery ? '?' . http_build_query($baseQuery) : '?') ?>">× Xóa tìm kiếm</a><?php endif; ?></form><?php endif; ?>
 </div>
 <?php if ($loadError): ?>
 <div class="public-empty" role="alert"><h2>Chưa thể tải bài viết</h2><p>Kết nối dữ liệu đang gián đoạn. Vui lòng thử lại sau.</p><a href="<?= e('?' . http_build_query($baseQuery + ['q' => $q, 'page' => $requestedPage] + $filterQuery)) ?>">Thử lại</a></div>

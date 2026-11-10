@@ -53,7 +53,8 @@ final class PublicPostController extends Controller
     private function listing(Request $request, ?string $category, ?array $found = null): void
     {
         $isSearch = $category === null;
-        $keyword = $isSearch ? trim((string) $request->query('q', '')) : '';
+        // Trang chuyên mục cũng nhận từ khóa: tìm kiếm trong phạm vi chuyên mục đó.
+        $keyword = trim((string) $request->query('q', ''));
         $tag = $isSearch ? trim((string) $request->query('tag', '')) : '';
         $tagName = '';
         $sort = (string) $request->query('sort', 'newest') === 'oldest' ? 'oldest' : 'newest';
